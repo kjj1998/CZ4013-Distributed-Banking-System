@@ -7,6 +7,7 @@ import java.util.Random;
 
 /**
  * A utility class to generate a random alphanumeric string of length n, where n >= 1
+ * Adapted from https://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string
  */
 public class MessageIDGenerator {
     /* Declaration of constants and character arrays */
