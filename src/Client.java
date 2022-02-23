@@ -1,16 +1,57 @@
 import objects.Currency;
-import utils.MessageIDGenerator;
 
-import static functionalities.ClientInterface.createAccount;
-import static functionalities.ClientInterface.queryAccBalance;
-import static utils.Constants.MESSAGE_ID_LENGTH;
+import java.util.Scanner;
+
+import static utils.Constants.*;
+import static utils.ReadingInputs.readCurrencyInput;
+import static utils.ReadingInputs.readNameInput;
 
 public class Client {
-    public static MessageIDGenerator gen = new MessageIDGenerator(MESSAGE_ID_LENGTH);   // create a new MessageIDGenerator
-
     public static void main(String[] args) {
+        boolean end = false;
 
-        int bankAcc = createAccount("John Smith", Currency.NZD, "P@ssword123", "1000.00");
-        double val = queryAccBalance(Integer.toString(bankAcc), "P@ssword123");
+        System.out.printf("%20s\n","Welcome to CZ4013 Bank!");
+        while (!end) {
+            try {
+                System.out.printf("%s\n", "What would you like to do? (Key in the number for your choice)");
+                System.out.printf("%s\n", "1. Open a new account");
+                System.out.printf("%s\n", "4. Close an existing account");
+                System.out.printf("%s\n", "8. Show current account balance");
+                System.out.printf("%s\n", "0. Exit");
+
+                Scanner scanner = new Scanner(System.in);
+                int option = Integer.parseInt(scanner.nextLine());
+
+                switch (option) {
+                    case ACC_OPENING_CODE: {
+                        System.out.println("Opening a new account...");
+                        String name = readNameInput();
+                        Currency chosenCurrency = readCurrencyInput();
+                        break;
+                    }
+                    case ACC_CLOSING_CODE:
+                        System.out.println("close acc");
+                        break;
+                    case ACC_BALANCE_CODE:
+                        System.out.println("query acc balance");
+                        break;
+                    case 0:
+                        System.out.println("Thank you for banking with us, goodbye!");
+                        end = true;
+                        break;
+                    default:
+                        System.out.printf("%s\n", "Unavailable choice entered");
+                        break;
+                }
+            } catch (NumberFormatException invalidFormat) {
+                System.out.println("Error: Invalid input entered");
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Unknown error\n");
+            }
+        }
+
+
+        // int bankAcc = createAccount("John Smith", Currency.NZD, "P@ssword123", "1000.00");
+        // double val = queryAccBalance(Integer.toString(bankAcc), "P@ssword123");
     }
 }

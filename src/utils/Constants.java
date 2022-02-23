@@ -21,6 +21,11 @@ public class Constants {
     public static final int ONE_BILLION = 1000000000;
 
     /* Option codes for each action to be taken at the server */
-    public static final int ACC_OPENING_CODE = 1;     // code for opening an account
-    public static final int ACC_BALANCE_CODE = 8;     // code for account balance query
+    public static final int ACC_OPENING_CODE = 1;                   // integer code for opening an account
+    public static final String ACC_OPENING_CODE_STRING = "1";       // string code for opening an account
+
+    public static final int ACC_BALANCE_CODE = 8;                   // integer code for account balance query
+    public static final String ACC_BALANCE_CODE_STRING = "8";       // string code for account balance query
+
+    public static final int ACC_CLOSING_CODE = 4;                     // integer code to close an account
 }
