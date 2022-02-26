@@ -28,4 +28,8 @@ public class Constants {
     public static final String ACC_BALANCE_CODE_STRING = "8";       // string code for account balance query
 
     public static final int ACC_CLOSING_CODE = 4;                     // integer code to close an account
+
+    /* Constants for reading in inputs */
+    public static final char NEW = 'n';
+    public static final char EXISTING = 'e';
 }

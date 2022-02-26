@@ -2,9 +2,10 @@ import objects.Currency;
 
 import java.util.Scanner;
 
+import static functionalities.ClientInterface.createAccount;
+import static utils.ClientMessage.DisplayAccountDetails;
 import static utils.Constants.*;
-import static utils.ReadingInputs.readCurrencyInput;
-import static utils.ReadingInputs.readNameInput;
+import static utils.ReadingInputs.*;
 
 public class Client {
     public static void main(String[] args) {
@@ -27,6 +28,13 @@ public class Client {
                         System.out.println("Opening a new account...");
                         String name = readNameInput();
                         Currency chosenCurrency = readCurrencyInput();
+                        String password = readPassword(NEW);
+                        String initialBal = readMoney(NEW);
+
+                        int accNumber = createAccount(name, chosenCurrency, password, initialBal);
+                        System.out.println("Account created with the following details");
+                        System.out.println("------------------------------------------");
+                        DisplayAccountDetails(accNumber, name, chosenCurrency, initialBal);
                         break;
                     }
                     case ACC_CLOSING_CODE:

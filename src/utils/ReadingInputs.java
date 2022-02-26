@@ -4,7 +4,7 @@ import objects.Currency;
 
 import java.util.Scanner;
 
-import static utils.ErrorHandling.verifyName;
+import static utils.ErrorHandling.*;
 
 public class ReadingInputs {
     static Scanner scanner = new Scanner(System.in);
@@ -50,8 +50,44 @@ public class ReadingInputs {
 
     }
 
+    public static String readPassword(char status) {
+        if (status == 'e') {
+            System.out.println("Enter password: ");
+            return scanner.nextLine();
+        } else {
+            System.out.println("Enter new password: ");
+            while (true) {
+                String password = scanner.nextLine();
+                if (verifyNewPassword(password))
+                    return password;
+                System.out.println("Invalid input.");
+                System.out.println("Password requires at least 8 characters");
+                System.out.println("Password requires at least 1 uppercase character.");
+                System.out.println("Password requires at least 1 lowercase character.");
+                System.out.println("Password requires at least 1 digit.");
+                System.out.println("Password requires at least one special character.");
+            }
+        }
+    }
+
+    public static String readMoney(char status) {
+        while (true) {
+            if (status == 'e') {
+                System.out.println("Enter amount: ");
+            } else {
+                System.out.println("Enter initial account balance: ");
+            }
+            String amt = scanner.nextLine();
+            if (verifyMoney(amt))
+                return amt;
+            System.out.println("Invalid input, not in dollars and cents");
+        }
+    }
+
     public static void main(String[] args) {
-        String name = readNameInput();
-        Currency currency = readCurrencyInput();
+        // String name = readNameInput();
+        // Currency currency = readCurrencyInput();
+        // String password = readPassword('n');
+        String amt = readMoney('n');
     }
 }
