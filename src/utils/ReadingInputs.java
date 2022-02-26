@@ -84,10 +84,21 @@ public class ReadingInputs {
         }
     }
 
+    public static String readAccountNumber() {
+        while (true) {
+            System.out.println("Enter account number: ");
+            String accNumber = scanner.nextLine();
+            if (verifyAccNumber(accNumber))
+                return accNumber;
+            System.out.println("Invalid account number entered");
+        }
+    }
+
     public static void main(String[] args) {
         // String name = readNameInput();
         // Currency currency = readCurrencyInput();
         // String password = readPassword('n');
-        String amt = readMoney('n');
+        // String amt = readMoney('n');
+        String accNumber = readAccountNumber();
     }
 }

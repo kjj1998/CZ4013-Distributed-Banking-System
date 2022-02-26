@@ -3,6 +3,7 @@ import objects.Currency;
 import java.util.Scanner;
 
 import static functionalities.ClientInterface.createAccount;
+import static functionalities.ClientInterface.queryAccBalance;
 import static utils.ClientMessage.DisplayAccountDetails;
 import static utils.Constants.*;
 import static utils.ReadingInputs.*;
@@ -41,7 +42,12 @@ public class Client {
                         System.out.println("close acc");
                         break;
                     case ACC_BALANCE_CODE:
-                        System.out.println("query acc balance");
+                        System.out.println("Querying account balance...");
+                        String accNumber = readAccountNumber();
+                        String password = readPassword(EXISTING);
+
+                        double balance = queryAccBalance(accNumber, password);
+
                         break;
                     case 0:
                         System.out.println("Thank you for banking with us, goodbye!");

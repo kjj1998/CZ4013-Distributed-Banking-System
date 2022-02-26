@@ -9,8 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import static utils.Constants.ASCII_CODE_FOR_PADDING;
-import static utils.Constants.BYTE_BLOCK_SIZE;
+import static utils.Constants.*;
 
 public class UtilityFunctions {
     /**
@@ -75,6 +74,18 @@ public class UtilityFunctions {
         choiceBuffer.put(array);
         choiceBuffer.rewind();
         return choiceBuffer.getInt();
+    }
+
+    /**
+     * Function to marshall a piece of String data
+     * @param val the string to be marshalled
+     * @return a byte array which is a concatenation of the length of the string and the characters in the string
+     */
+    public static byte[] marshall(String val) {
+        byte[] lengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(val.length()).array();
+        byte[] valByteArray = convertStringToByteArray(val);
+
+        return concatWithCopy(lengthByteArray, valByteArray);
     }
 
     /**

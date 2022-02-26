@@ -36,4 +36,11 @@ public class ErrorHandling {
 
         return matcher.matches();
     }
+
+    public static boolean verifyAccNumber(String accNumber) {
+        Pattern pattern = Pattern.compile("^[0-9]{10}$");
+        Matcher matcher = pattern.matcher(accNumber);
+
+        return matcher.matches();
+    }
 }

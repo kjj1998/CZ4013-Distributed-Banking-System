@@ -8,8 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 import static utils.Constants.*;
 import static utils.SocketFunctions.sendRequest;
-import static utils.UtilityFunctions.concatWithCopy;
-import static utils.UtilityFunctions.convertStringToByteArray;
+import static utils.UtilityFunctions.*;
 
 
 public class ClientInterface {
@@ -26,30 +25,18 @@ public class ClientInterface {
      */
     public static int createAccount(String name, Currency currency, String password, String initialAccBalance) {
 
-        int nameLength = name.length();
-        int currencyLength = currency.toString().length();
-        int accBalanceLength = initialAccBalance.length();
-        int passwordLength = password.length();
-
         byte[] accCreationByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_OPENING_CODE).array();
 
-        byte[] nameLengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(nameLength).array();
-        byte[] nameByteArray = convertStringToByteArray(name);
-
-        byte[] currencyLengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(currencyLength).array();
-        byte[] currencyByteArray = convertStringToByteArray(currency.toString());
-
-        byte[] passwordLengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(passwordLength).array();
-        byte[] passwordByteArray = convertStringToByteArray(password);
-
-        byte[] accBalanceLengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(accBalanceLength).array();
-        byte[] accBalanceArray = convertStringToByteArray(initialAccBalance);
+        byte[] nameByteArray = marshall(name);
+        byte[] currencyByteArray = marshall(currency.name());
+        byte[] passwordByteArray = marshall(password);
+        byte[] accBalanceArray = marshall(initialAccBalance);
 
         String messageID = gen.nextString();
         System.out.println(messageID);
         byte[] messageIDArray = convertStringToByteArray(messageID);
 
-        byte[] marshall = concatWithCopy(messageIDArray, accCreationByteArray, nameLengthByteArray, nameByteArray, currencyLengthByteArray, currencyByteArray, passwordLengthByteArray, passwordByteArray, accBalanceLengthByteArray, accBalanceArray);
+        byte[] marshall = concatWithCopy(messageIDArray, accCreationByteArray, nameByteArray, currencyByteArray, passwordByteArray, accBalanceArray);
         for (byte c : marshall) {
             System.out.printf("%02X ", c);      // printing to show the marshalled data on console
         }
@@ -70,22 +57,30 @@ public class ClientInterface {
      * @return the current balance in the account
      */
     public static double queryAccBalance(String accNumber, String password) {
+        /*
         int accNumberLength = accNumber.length();
         int passwordLength = password.length();
+        */
 
         byte[] accBalanceQueryByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_BALANCE_CODE).array();
 
+        /*
         byte[] accNumberLengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(accNumberLength).array();
         byte[] accNumberByteArray = convertStringToByteArray(accNumber);
 
         byte[] passwordLengthByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(passwordLength).array();
         byte[] passwordByteArray = convertStringToByteArray(password);
 
+         */
+
+        byte[] accNumberByteArray = marshall(accNumber);
+        byte[] passwordByteArray = marshall(password);
+
         String messageID = gen.nextString();
         System.out.println(messageID);
         byte[] messageIDArray = convertStringToByteArray(messageID);
 
-        byte[] marshall = concatWithCopy(messageIDArray, accBalanceQueryByteArray, accNumberLengthByteArray, accNumberByteArray, passwordLengthByteArray, passwordByteArray);
+        byte[] marshall = concatWithCopy(messageIDArray, accBalanceQueryByteArray, accNumberByteArray, passwordByteArray);
         for (byte c : marshall) {
             System.out.printf("%02X ", c);      // printing to show the marshalled data on console
         }
@@ -93,7 +88,7 @@ public class ClientInterface {
         byte[] reply = sendRequest(marshall);
 
         double currentAccBalance = ByteBuffer.wrap(reply).getDouble();
-        System.out.println("current account balance: " + currentAccBalance);
+        System.out.printf("current account balance: %.2f\n", currentAccBalance);
         return currentAccBalance;
     }
 
