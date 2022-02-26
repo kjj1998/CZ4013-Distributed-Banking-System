@@ -1,9 +1,9 @@
+import objects.Account;
 import objects.Currency;
 
 import java.util.Scanner;
 
-import static functionalities.ClientInterface.createAccount;
-import static functionalities.ClientInterface.queryAccBalance;
+import static functionalities.ClientInterface.*;
 import static utils.ClientMessage.DisplayAccountDetails;
 import static utils.Constants.*;
 import static utils.ReadingInputs.*;
@@ -11,6 +11,9 @@ import static utils.ReadingInputs.*;
 public class Client {
     public static void main(String[] args) {
         boolean end = false;
+        String name, password, initialBalance, accNumber;
+        double balance;
+        Currency currency;
 
         System.out.printf("%20s\n","Welcome to CZ4013 Bank!");
         while (!end) {
@@ -18,36 +21,45 @@ public class Client {
                 System.out.printf("%s\n", "What would you like to do? (Key in the number for your choice)");
                 System.out.printf("%s\n", "1. Open a new account");
                 System.out.printf("%s\n", "4. Close an existing account");
-                System.out.printf("%s\n", "8. Show current account balance");
+                System.out.printf("%s\n", "8. Show current account initialBalance");
                 System.out.printf("%s\n", "0. Exit");
 
                 Scanner scanner = new Scanner(System.in);
                 int option = Integer.parseInt(scanner.nextLine());
 
                 switch (option) {
-                    case ACC_OPENING_CODE: {
+                    case ACC_CREATION_CODE: {
                         System.out.println("Opening a new account...");
-                        String name = readNameInput();
-                        Currency chosenCurrency = readCurrencyInput();
-                        String password = readPassword(NEW);
-                        String initialBal = readMoney(NEW);
+                        name = readNameInput();
+                        currency = readCurrencyInput();
+                        password = readPassword(NEW);
+                        initialBalance = readMoney(NEW);
 
-                        int accNumber = createAccount(name, chosenCurrency, password, initialBal);
+                        Account temp = createAccount(name, currency, password, initialBalance);
                         System.out.println("Account created with the following details");
                         System.out.println("------------------------------------------");
-                        DisplayAccountDetails(accNumber, name, chosenCurrency, initialBal);
+                        DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
                         break;
                     }
                     case ACC_CLOSING_CODE:
-                        System.out.println("close acc");
+                        System.out.println("Closing account...");
+                        accNumber = readAccountNumber();
+                        name = readNameInput();
+                        password = readPassword(EXISTING);
+                        accNumber = closeAccount(name, password, accNumber);
+
+                        System.out.println("The following account is closed");
+                        System.out.println("Account Number: " + accNumber);
+                        System.out.println("Account Holder: " + name);
                         break;
                     case ACC_BALANCE_CODE:
-                        System.out.println("Querying account balance...");
-                        String accNumber = readAccountNumber();
-                        String password = readPassword(EXISTING);
+                        System.out.println("Querying account initialBalance...");
+                        accNumber = readAccountNumber();
+                        password = readPassword(EXISTING);
 
-                        double balance = queryAccBalance(accNumber, password);
-
+                        balance = queryAccBalance(accNumber, password);
+                        System.out.println("Account number: " + accNumber);
+                        System.out.printf("Account initialBalance: $%.2f\n", balance);
                         break;
                     case 0:
                         System.out.println("Thank you for banking with us, goodbye!");

@@ -4,10 +4,11 @@ import objects.Account;
 import objects.Currency;
 import objects.Pointer;
 
-import java.util.HashMap;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
-import static utils.UtilityFunctions.round;
-import static utils.UtilityFunctions.unmarshall;
+import static utils.Constants.*;
+import static utils.UtilityFunctions.*;
 
 public class ServerInterface {
     /**
@@ -17,7 +18,7 @@ public class ServerInterface {
      * @param accMapping the HashMap mapping account numbers to their respective accounts
      * @return the account number of the newly opened bank account
      */
-    public static int processAccCreation(byte[] request, HashMap<Integer, Account> accMapping) {
+    public static byte[] processAccCreation(byte[] request, Map<Integer, Account> accMapping) {
         /*
             I'm basing my design off CORBA's Common Data Representation where it is assumed that sender and recipient have
             common knowledge of the order and types of the data items in a message.
@@ -63,9 +64,16 @@ public class ServerInterface {
         int accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);                // Generate random acc number
         System.out.printf("acc number: %d\n", accNumber);
 
-        accMapping.put(accNumber, new Account(name, Currency.valueOf(currency), password, amt, accNumber));     // create account and add it into the accMapping
+        Account newAccount = new Account(name, Currency.valueOf(currency), password, amt, accNumber);
+        accMapping.put(accNumber, newAccount);     // create account and add it into the accMapping
 
-        return accNumber;
+        byte[] statusCodeByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(OK).array();
+        byte[] accountNumberByteArray = marshall(String.valueOf(newAccount.getAccNumber()));
+        byte[] nameByteArray = marshall(newAccount.getName());
+        byte[] currencyByteArray = marshall(newAccount.getCurrency().name());
+        byte[] accBalanceByteArray = marshall(String.valueOf(newAccount.getAccBalance()));
+
+        return concatWithCopy(statusCodeByteArray, accountNumberByteArray, nameByteArray, currencyByteArray, accBalanceByteArray);
     }
 
     /**
@@ -75,14 +83,13 @@ public class ServerInterface {
      * @param accMapping the HashMap mapping account numbers to their respective accounts
      * @return the current balance in the account
      */
-    public static double processAccBalanceQuery(byte[] request, HashMap<Integer, Account> accMapping) {
+    public static double processAccBalanceQuery(byte[] request, Map<Integer, Account> accMapping) {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
         System.out.println("acc number " + accNumber);
 
         String password = unmarshall(val, request);
-        System.out.println("password " + password);
 
         if (!accMapping.containsKey(accNumber))
             throw new IllegalArgumentException();
@@ -91,6 +98,30 @@ public class ServerInterface {
 
         if (queriedAccount.verifyPassword(password)) {
             return queriedAccount.getAccBalance();
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public static <K,V> int processAccClosure(byte[] request, Map<K,V> accMapping) {
+        Pointer val = new Pointer(0);
+
+        int accNumber = Integer.parseInt(unmarshall(val, request));
+        System.out.println("acc number: " + accNumber);
+
+        String name = unmarshall(val, request);
+        System.out.println("name: " + name);
+
+        String password = unmarshall(val, request);
+
+        if (!accMapping.containsKey(accNumber))
+            throw new IllegalArgumentException();
+
+        Account queriedAccount = (Account) accMapping.get(accNumber);
+
+        if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
+            accMapping.remove(accNumber);
+            return accNumber;
         } else {
             throw new IllegalArgumentException();
         }

@@ -17,8 +17,19 @@ public class Account {
         this.accNumber = accNumber;
     }
 
-    public int getAccNumber() {
-        return accNumber;
+    public Account(String name, Currency cur, double accBalance, int accNumber) {
+        this.name = name;
+        this.cur = cur;
+        this.accBalance = accBalance;
+        this.accNumber = accNumber;
+    }
+
+    public String getAccNumber() {
+        return String.valueOf(accNumber);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Currency getCurrency() {
@@ -38,6 +49,10 @@ public class Account {
 
     public boolean verifyPassword(String text) {
         return Objects.equals(password, text);
+    }
+
+    public boolean verifyName(String text) {
+        return Objects.equals(name, text);
     }
 
     public double getAccBalance() {

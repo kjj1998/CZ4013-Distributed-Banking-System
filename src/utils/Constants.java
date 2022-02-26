@@ -17,19 +17,18 @@ public class Constants {
       After the message id, and the code for the action to be taken
     */
     public static final int MESSAGE_INFO_START_INDEX = 20;
-    public static final int MONETARY_DECIMAL_PLACES = 2;
-    public static final int ONE_BILLION = 1000000000;
 
     /* Option codes for each action to be taken at the server */
-    public static final int ACC_OPENING_CODE = 1;                   // integer code for opening an account
-    public static final String ACC_OPENING_CODE_STRING = "1";       // string code for opening an account
-
+    public static final int ACC_CREATION_CODE = 1;                   // integer code for opening an account
     public static final int ACC_BALANCE_CODE = 8;                   // integer code for account balance query
-    public static final String ACC_BALANCE_CODE_STRING = "8";       // string code for account balance query
-
     public static final int ACC_CLOSING_CODE = 4;                     // integer code to close an account
 
     /* Constants for reading in inputs */
     public static final char NEW = 'n';
     public static final char EXISTING = 'e';
+
+    /* Status codes from server */
+    public static final int OK = 200;
+    public static final int NOT_FOUND = 404;
+    public static final int UNAUTHORIZED = 401;
 }
