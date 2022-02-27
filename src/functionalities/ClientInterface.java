@@ -6,8 +6,6 @@ import objects.Pointer;
 import utils.MessageIDGenerator;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import static utils.Constants.*;
 import static utils.SocketFunctions.sendRequest;
@@ -45,26 +43,19 @@ public class ClientInterface {
         */
         byte[] reply = sendRequest(marshall);
 
-        int statusCode  = ByteBuffer.wrap(Arrays.copyOfRange(reply, 0, BYTE_BLOCK_SIZE_FOR_INT)).getInt();
-        byte[] info = Arrays.copyOfRange(reply, BYTE_BLOCK_SIZE_FOR_INT, reply.length);
-        if (statusCode == OK) {
-            Pointer val = new Pointer(0);
+        Pointer val = new Pointer(0);
+        String statusCode = new String(unmarshall(val, reply));
 
-            int accNumber = Integer.parseInt(unmarshall(val, info));
-            name = unmarshall(val, info);
-            currency = Currency.valueOf(unmarshall(val, info));
-            double accBalance = Double.parseDouble(unmarshall(val, info));
+        if (statusCode.equals(OK)) {
+            int accNumber = Integer.parseInt(unmarshall(val, reply));
+            name = unmarshall(val, reply);
+            currency = Currency.valueOf(unmarshall(val, reply));
+            double accBalance = Double.parseDouble(unmarshall(val, reply));
             Account temp = new Account(name, currency, accBalance, accNumber);
             return temp;
         }
 
         return null;
-        /*
-        ByteBuffer choiceBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-        choiceBuffer.put(reply);
-        choiceBuffer.rewind();
-        return choiceBuffer.getInt();
-         */
     }
 
     /**
@@ -74,49 +65,66 @@ public class ClientInterface {
      * @param password  the password of the account to be queried
      * @return the current balance in the account
      */
-    public static double queryAccBalance(String accNumber, String password) {
+    public static Account queryAccBalance(String accNumber, String password) throws Exception {
 
         byte[] accBalanceQueryByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_BALANCE_CODE).array();
-
         byte[] accNumberByteArray = marshall(accNumber);
         byte[] passwordByteArray = marshall(password);
 
-        String messageID = gen.nextString();
-        System.out.println(messageID);
-        byte[] messageIDArray = convertStringToByteArray(messageID);
+        byte[] messageIDArray = convertStringToByteArray(gen.nextString());
 
         byte[] marshall = concatWithCopy(messageIDArray, accBalanceQueryByteArray, accNumberByteArray, passwordByteArray);
+        /*
         for (byte c : marshall) {
             System.out.printf("%02X ", c);      // printing to show the marshalled data on console
         }
-        System.out.println();
+        System.out.println();*/
         byte[] reply = sendRequest(marshall);
 
-        return ByteBuffer.wrap(reply).getDouble();
+        Pointer pointer = new Pointer(0);
+        String statusCode = unmarshall(pointer, reply);
+
+        switch (statusCode) {
+            case OK:
+                return unmarshallAccount(pointer, reply);
+            case NOT_FOUND:
+                throw new IllegalArgumentException(NOT_FOUND);
+            case UNAUTHORIZED:
+                throw new IllegalArgumentException(UNAUTHORIZED);
+            default:
+                throw new Exception();
+        }
     }
 
-    public static String closeAccount(String name, String password, String accNumber) {
-        byte[] closeAccByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_CLOSING_CODE).array();
+    public static Account closeAccount(String name, String password, String accNumber) throws Exception {
 
+        byte[] closeAccByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_CLOSING_CODE).array();
         byte[] nameByteArray = marshall(name);
         byte[] passwordByteArray = marshall(password);
         byte[] accNumberByteArray = marshall(accNumber);
 
-        String messageID = gen.nextString();
-        System.out.println(messageID);
-        byte[] messageIDArray = convertStringToByteArray(messageID);
+        byte[] messageIDArray = convertStringToByteArray(gen.nextString());
 
         byte[] marshall = concatWithCopy(messageIDArray, closeAccByteArray, accNumberByteArray, nameByteArray, passwordByteArray);
+        /*
         for (byte c : marshall) {
             System.out.printf("%02X ", c);      // printing to show the marshalled data on console
         }
-        System.out.println();
-        String reply = new String(sendRequest(marshall), StandardCharsets.UTF_8);
+        System.out.println();*/
+        byte[] reply = sendRequest(marshall);
+        //String reply = new String(sendRequest(marshall), StandardCharsets.UTF_8);
+        Pointer pointer = new Pointer(0);
+        String statusCode = unmarshall(pointer, reply);
 
-        if (reply.equals(accNumber)) {
-            return reply;
+        switch (statusCode) {
+            case OK:
+                return unmarshallAccount(pointer, reply);
+            case NOT_FOUND:
+                throw new IllegalArgumentException(NOT_FOUND);
+            case UNAUTHORIZED:
+                throw new IllegalArgumentException(UNAUTHORIZED);
+            default:
+                throw new Exception();
         }
-
-        return " ";
     }
 }

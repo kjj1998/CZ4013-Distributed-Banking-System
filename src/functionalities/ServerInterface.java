@@ -4,7 +4,6 @@ import objects.Account;
 import objects.Currency;
 import objects.Pointer;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 import static utils.Constants.*;
@@ -65,15 +64,13 @@ public class ServerInterface {
         System.out.printf("acc number: %d\n", accNumber);
 
         Account newAccount = new Account(name, Currency.valueOf(currency), password, amt, accNumber);
+
+        if (accMapping.containsKey(accNumber)) {
+            accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);
+        }
         accMapping.put(accNumber, newAccount);     // create account and add it into the accMapping
 
-        byte[] statusCodeByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(OK).array();
-        byte[] accountNumberByteArray = marshall(String.valueOf(newAccount.getAccNumber()));
-        byte[] nameByteArray = marshall(newAccount.getName());
-        byte[] currencyByteArray = marshall(newAccount.getCurrency().name());
-        byte[] accBalanceByteArray = marshall(String.valueOf(newAccount.getAccBalance()));
-
-        return concatWithCopy(statusCodeByteArray, accountNumberByteArray, nameByteArray, currencyByteArray, accBalanceByteArray);
+        return marshallAccount(newAccount);
     }
 
     /**
@@ -83,7 +80,7 @@ public class ServerInterface {
      * @param accMapping the HashMap mapping account numbers to their respective accounts
      * @return the current balance in the account
      */
-    public static double processAccBalanceQuery(byte[] request, Map<Integer, Account> accMapping) {
+    public static byte[] processAccBalanceQuery(byte[] request, Map<Integer, Account> accMapping) {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
@@ -92,18 +89,18 @@ public class ServerInterface {
         String password = unmarshall(val, request);
 
         if (!accMapping.containsKey(accNumber))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(NOT_FOUND);
 
         Account queriedAccount = accMapping.get(accNumber);
 
         if (queriedAccount.verifyPassword(password)) {
-            return queriedAccount.getAccBalance();
+            return marshallAccount(queriedAccount);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
 
-    public static <K,V> int processAccClosure(byte[] request, Map<K,V> accMapping) {
+    public static <K,V> byte[] processAccClosure(byte[] request, Map<K,V> accMapping) {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
@@ -115,15 +112,15 @@ public class ServerInterface {
         String password = unmarshall(val, request);
 
         if (!accMapping.containsKey(accNumber))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(NOT_FOUND);
 
         Account queriedAccount = (Account) accMapping.get(accNumber);
 
         if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
             accMapping.remove(accNumber);
-            return accNumber;
+            return marshallAccount(queriedAccount);
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
 }

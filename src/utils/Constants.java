@@ -28,7 +28,10 @@ public class Constants {
     public static final char EXISTING = 'e';
 
     /* Status codes from server */
-    public static final int OK = 200;
-    public static final int NOT_FOUND = 404;
-    public static final int UNAUTHORIZED = 401;
+    public static final String OK = "200";
+    public static final String UNAUTHORIZED = "401";
+    public static final String INSUFFICIENT = "402";
+    public static final String NOT_FOUND = "404";
+
+
 }

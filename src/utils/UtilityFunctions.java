@@ -1,5 +1,7 @@
 package utils;
 
+import objects.Account;
+import objects.Currency;
 import objects.Pointer;
 
 import java.lang.reflect.Array;
@@ -124,6 +126,35 @@ public class UtilityFunctions {
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    /**
+     * Function to unmarshall account details on the client side
+     * @param pointer the Pointer object to keep track of the byte position
+     * @param reply the byte[] array containing the marshalled account details from the server
+     * @return Account object containing details from the server
+     */
+    public static Account unmarshallAccount(Pointer pointer, byte[] reply) {
+        int accNumber = Integer.parseInt(unmarshall(pointer, reply));
+        String name = unmarshall(pointer, reply);
+        Currency currency = Currency.valueOf(unmarshall(pointer, reply));
+        double accBalance = Double.parseDouble(unmarshall(pointer, reply));
+        return new Account(name, currency, accBalance, accNumber);
+    }
+
+    /**
+     * Function to marshall account details on the server side
+     * @param account the Account object containing the account details
+     * @return byte[] array of the account details
+     */
+    public static byte[] marshallAccount(Account account) {
+        byte[] statusCodeByteArray = marshall(OK);
+        byte[] accountNumberByteArray = marshall(String.valueOf(account.getAccNumber()));
+        byte[] nameByteArray = marshall(account.getName());
+        byte[] currencyByteArray = marshall(account.getCurrency().name());
+        byte[] accBalanceByteArray = marshall(String.valueOf(account.getAccBalance()));
+
+        return concatWithCopy(statusCodeByteArray, accountNumberByteArray, nameByteArray, currencyByteArray, accBalanceByteArray);
     }
 }
 
