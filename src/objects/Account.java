@@ -2,12 +2,14 @@ package objects;
 
 import java.util.Objects;
 
+import static utils.Constants.INSUFFICIENT;
+
 public class Account {
-    private String name;
-    private Currency cur;
+    private final String name;
+    private final Currency cur;
     private String password;
     private double accBalance;
-    private int accNumber;
+    private final int accNumber;
 
     public Account(String name, Currency cur, String password, double accBalance, int accNumber) {
         this.name = name;
@@ -38,8 +40,7 @@ public class Account {
 
     public void withdraw(double amt) {
         if (accBalance < amt)
-            throw new IllegalArgumentException();
-
+            throw new IllegalArgumentException(INSUFFICIENT);
         this.accBalance -= amt;
     }
 

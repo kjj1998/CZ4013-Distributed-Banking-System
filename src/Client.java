@@ -31,29 +31,34 @@ public class Client {
                 switch (option) {
                     case ACC_CREATION_CODE: {
                         System.out.println("Opening a new account...");
+
                         name = readNameInput();
                         currency = readCurrencyInput();
                         password = readPassword(NEW);
                         initialBalance = readMoney(NEW);
-
                         temp = createAccount(name, currency, password, initialBalance);
+
                         System.out.println("Account created with the following details");
                         System.out.println("------------------------------------------");
+                        assert temp != null : "Account object is null";
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
+
                         break;
                     }
                     case ACC_CLOSING_CODE:
                         System.out.println("Closing account...");
+
                         accNumber = readAccountNumber();
                         name = readNameInput();
                         password = readPassword(EXISTING);
-
                         temp = closeAccount(name, password, accNumber);
+
                         System.out.println("The following account is closed");
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
+
                         break;
                     case ACC_BALANCE_CODE:
-                        System.out.println("Querying account initialBalance...");
+                        System.out.println("Querying account balance...");
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
 
@@ -74,7 +79,7 @@ public class Client {
                 if (Objects.equals(serverError.getMessage(), NOT_FOUND)) {
                     System.out.println("Error: Account Number not found");
                 } else if (Objects.equals(serverError.getMessage(), UNAUTHORIZED)) {
-                    System.out.println("Error: Wrong name/password entered.");
+                    System.out.println("Error: Wrong name/password entered");
                 }
             }
             catch (Exception e) {

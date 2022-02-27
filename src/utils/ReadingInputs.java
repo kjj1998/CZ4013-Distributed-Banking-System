@@ -4,11 +4,16 @@ import objects.Currency;
 
 import java.util.Scanner;
 
+import static utils.Constants.EXISTING;
 import static utils.ErrorHandling.*;
 
 public class ReadingInputs {
     static Scanner scanner = new Scanner(System.in);
 
+    /**
+     * A function to read in name inputs
+     * @return the String containing the name that was read in
+     */
     public static String readNameInput() {
         System.out.println("Enter name of the account holder: ");
         while (true) {
@@ -19,6 +24,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to select the currency from a list of currencies
+     * @return the currency chosen
+     */
     public static Currency readCurrencyInput() {
         while (true) {
             try {
@@ -50,8 +59,13 @@ public class ReadingInputs {
 
     }
 
+    /**
+     * A function to read in password
+     * @param status a char to denote whether a new or an existing password is being read
+     * @return the password string
+     */
     public static String readPassword(char status) {
-        if (status == 'e') {
+        if (status == EXISTING) {
             System.out.println("Enter password: ");
             return scanner.nextLine();
         } else {
@@ -70,6 +84,11 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in money
+     * @param status a char to denote whether an initial account balance is being entered or not
+     * @return the money string
+     */
     public static String readMoney(char status) {
         while (true) {
             if (status == 'e') {
@@ -84,6 +103,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in the account number
+     * @return the account number string
+     */
     public static String readAccountNumber() {
         while (true) {
             System.out.println("Enter account number: ");
@@ -95,10 +118,5 @@ public class ReadingInputs {
     }
 
     public static void main(String[] args) {
-        // String name = readNameInput();
-        // Currency currency = readCurrencyInput();
-        // String password = readPassword('n');
-        // String amt = readMoney('n');
-        String accNumber = readAccountNumber();
     }
 }

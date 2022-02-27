@@ -15,7 +15,7 @@ public class ServerInterface {
      *
      * @param request byte array containing data from the client
      * @param accMapping the HashMap mapping account numbers to their respective accounts
-     * @return the account number of the newly opened bank account
+     * @return an Account object containing the account details (excluding password)
      */
     public static byte[] processAccCreation(byte[] request, Map<Integer, Account> accMapping) {
         /*
@@ -44,31 +44,20 @@ public class ServerInterface {
             31 30 30 30 2E 30 30 5F = "1000.00_" (7 bytes to represent the initial bank amount with 1 byte as padding)
 
          */
+        Pointer pointer = new Pointer(0);
 
-        Pointer val = new Pointer(0);
-
-        String name = unmarshall(val, request);
-        System.out.printf("name: %s\n", name);
-
-        String currency = unmarshall(val, request);
-        System.out.printf("currency: %s\n", currency);
-
-        String password = unmarshall(val, request);
-        System.out.printf("password: %s\n", password);
-
-        String amtString = unmarshall(val, request);
+        String name = unmarshall(pointer, request);
+        String currency = unmarshall(pointer, request);
+        String password = unmarshall(pointer, request);
+        String amtString = unmarshall(pointer, request);
         double amt = round(Double.parseDouble(amtString), 2);
-        System.out.printf("amt: $%.2f\n", amt);
-
-        int accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);                // Generate random acc number
-        System.out.printf("acc number: %d\n", accNumber);
-
+        int accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate random acc number
         Account newAccount = new Account(name, Currency.valueOf(currency), password, amt, accNumber);
 
         if (accMapping.containsKey(accNumber)) {
-            accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);
+            accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate another account number if not unique
         }
-        accMapping.put(accNumber, newAccount);     // create account and add it into the accMapping
+        accMapping.put(accNumber, newAccount);     // create account and add it into the account mapping
 
         return marshallAccount(newAccount);
     }
@@ -78,14 +67,12 @@ public class ServerInterface {
      *
      * @param request byte array containing the account number and password of the account
      * @param accMapping the HashMap mapping account numbers to their respective accounts
-     * @return the current balance in the account
+     * @return an Account object containing the account details (excluding password)
      */
     public static byte[] processAccBalanceQuery(byte[] request, Map<Integer, Account> accMapping) {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
-        System.out.println("acc number " + accNumber);
-
         String password = unmarshall(val, request);
 
         if (!accMapping.containsKey(accNumber))
@@ -100,15 +87,19 @@ public class ServerInterface {
         }
     }
 
+    /**
+     * Function to close an account on the server
+     * @param request byte array containing the account number, name and password of account to be closed
+     * @param accMapping the HashMap mapping account numbers to their respective accounts
+     * @param <K> Integer
+     * @param <V> Account
+     * @return an Account object containing the account details (excluding password)
+     */
     public static <K,V> byte[] processAccClosure(byte[] request, Map<K,V> accMapping) {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
-        System.out.println("acc number: " + accNumber);
-
         String name = unmarshall(val, request);
-        System.out.println("name: " + name);
-
         String password = unmarshall(val, request);
 
         if (!accMapping.containsKey(accNumber))

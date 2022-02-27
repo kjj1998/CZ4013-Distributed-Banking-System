@@ -14,7 +14,7 @@ public class MessageIDGenerator {
     public static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String lower = upper.toLowerCase(Locale.ROOT);
     public static final String digits = "0123456789";
-    public static final String alphanum = upper + lower + digits;
+    public static final String alphanumeric = upper + lower + digits;
 
     /* Declaration of variables */
     private final Random random;
@@ -45,7 +45,7 @@ public class MessageIDGenerator {
      * @param length an integer value containing the length of the random string to be generated
      */
     public MessageIDGenerator(int length) {
-        this(length, new SecureRandom(), alphanum);
+        this(length, new SecureRandom(), alphanumeric);
     }
 
 
