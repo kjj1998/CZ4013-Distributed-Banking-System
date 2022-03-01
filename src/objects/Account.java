@@ -51,7 +51,6 @@ public class Account {
     public boolean verifyPassword(String text) {
         return Objects.equals(password, text);
     }
-
     public boolean verifyName(String text) {
         return Objects.equals(name, text);
     }
