@@ -46,8 +46,6 @@ public class Client {
                         System.out.println("------------------------------------------");
                         assert temp != null : "Account object is null";
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
-                        name = readNameInput();
-                        Currency chosenCurrency = readCurrencyInput();
                         break;
                     }
                     case DEPOSIT_MONEY_CODE:{
