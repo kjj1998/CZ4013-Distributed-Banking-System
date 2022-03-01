@@ -110,9 +110,9 @@ public class ClientInterface {
                 throw new Exception();
     }
 
-    public static double depositMoney(String name, int accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) {
+    public static double depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) {
         int nameLength = name.length();
-        int accNumberLength = Integer.toString(accNumber).length();
+        int accNumberLength = accNumber.length();
         int passwordLength = password.length();
         int currencyLength = currency.toString().length();
         int depositLength = String.valueOf(deposit).length();
@@ -146,9 +146,9 @@ public class ClientInterface {
         System.out.println("Current account balance: " + currentAccBalance);
         return currentAccBalance;
     }
-    public static double withdrawMoney(String name, int accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce) {
+    public static double withdrawMoney(String name, String accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce) {
         int nameLength = name.length();
-        int accNumberLength = Integer.toString(accNumber).length();
+        int accNumberLength = accNumber.length();
         int passwordLength = password.length();
         int currencyLength = currency.toString().length();
         int withdrawLength = String.valueOf(withdraw).length();
@@ -183,9 +183,9 @@ public class ClientInterface {
         return currentAccBalance;
     }
 
-    public static double transferMoney(String name, int accNumber,String password,int toAccNumber,Currency currency, double withdraw,boolean atLeastOnce) {
+    public static double transferMoney(String name, String accNumber,String password,int toAccNumber,Currency currency, double withdraw,boolean atLeastOnce) {
         int nameLength = name.length();
-        int accNumberLength = Integer.toString(accNumber).length();
+        int accNumberLength = accNumber.length();
         int passwordLength = password.length();
         int toAccNumberLength = Integer.toString(toAccNumber).length();
         int currencyLength = currency.toString().length();
