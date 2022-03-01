@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 import static utils.Constants.*;
 import static utils.Constants.SERVER_PORT_NUMBER;
@@ -15,7 +16,7 @@ public class SocketFunctions {
      * @param marshall the byte array to be sent over
      * @return the reply message from the server
      */
-    public static byte[] sendRequest(byte[] marshall) {
+    public static byte[] sendRequest(byte[] marshall,Boolean atLeastOnce) {
         try (DatagramSocket aSocket = new DatagramSocket()) {
             InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
 
@@ -24,7 +25,23 @@ public class SocketFunctions {
 
             byte[] buffer = new byte[BUFFER_SIZE];     // a buffer for receive
             DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
-            aSocket.receive(reply);
+            //If exceed timeout period, exception will be raised
+            if (atLeastOnce){
+                aSocket.setSoTimeout(atLeastOnceTimeout); //1000s set inside constants.java
+                boolean received=false;
+                while(received==false){
+                    try{
+                        aSocket.receive(reply);
+                        received=true;
+                        return reply.getData();
+                    }
+                    catch(SocketException e){
+                        System.out.println("TIMEOUT");
+                    }
+                }
+            }
+            else
+                aSocket.receive(reply);
 
             return reply.getData();
         } catch (Exception e) {
