@@ -1,19 +1,20 @@
 import objects.Account;
+import objects.LruReplyHistory;
 
 import java.net.DatagramPacket;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static functionalities.ServerInterface.*;
 import static utils.Constants.*;
-import static utils.SocketFunctions.*;
+import static utils.MarshallFunctions.marshall;
+import static utils.SocketFunctions.receiveRequest;
+import static utils.SocketFunctions.sendReply;
 import static utils.UtilityFunctions.byteArrayToInt;
-import static utils.UtilityFunctions.marshall;
 
 public class Server {
     public static Map<Integer, Account> accMapping = new HashMap<>();       // maintain a mapping of account numbers to all accounts currently on the server
+    private static LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);
+
     public static void main(String[] args) {
         System.out.println("Server started on port " + SERVER_PORT_NUMBER);
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -32,7 +33,19 @@ public class Server {
                 messageID = new String(Arrays.copyOfRange(data, 0, MESSAGE_ID_LENGTH));             // retrieve the unique message id
                 System.out.printf("\nmessageID: %s\n", messageID);
 
-                int action = byteArrayToInt(Arrays.copyOfRange(data, MESSAGE_ID_LENGTH, MESSAGE_INFO_START_INDEX));    // get the action to be taken by the server
+//                int action = byteArrayToInt(Arrays.copyOfRange(data, MESSAGE_ID_LENGTH, MESSAGE_INFO_START_INDEX));    // get the action to be taken by the server
+//                byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information from the client
+
+                //Check if message reply has already been stored
+                Optional<byte[]> cachedReply = replyHistory.getReply(messageID);
+
+                int action;
+                if(cachedReply.isPresent()){
+                    reply = cachedReply.get();
+                    action = CACHED_REPLY;
+                }else {
+                    action = byteArrayToInt(Arrays.copyOfRange(data, MESSAGE_ID_LENGTH, MESSAGE_INFO_START_INDEX));    // get the action to be taken by the server
+                }
                 byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information from the client
 
                 /* switch statement to select the action to be taken by the server */
@@ -40,17 +53,23 @@ public class Server {
                     case ACC_CREATION_CODE:
                         System.out.println("Creating account...");
                         reply = processAccCreation(info, accMapping);
+                        replyHistory.putReply(messageID, reply);
                         System.out.println("Account created");
                         break;
                     case ACC_BALANCE_CODE:
                         System.out.println("Querying account balance...");
                         reply = processAccBalanceQuery(info, accMapping);
+                        replyHistory.putReply(messageID, reply);
                         System.out.println("Account balance queried");
                         break;
                     case ACC_CLOSING_CODE:
                         System.out.println("Closing account...");
                         reply = processAccClosure(info, accMapping);
+                        replyHistory.putReply(messageID, reply);
                         System.out.println("Account closed");
+                        break;
+                    case CACHED_REPLY:
+                        System.out.println("Sending reply from cache");
                         break;
                 }
 

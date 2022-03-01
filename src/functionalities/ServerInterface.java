@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static utils.Constants.*;
 import static utils.UtilityFunctions.*;
+import static utils.MarshallFunctions.*;
 
 public class ServerInterface {
     /**

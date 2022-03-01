@@ -5,6 +5,7 @@ public class Constants {
     public static final String HOST_NAME = "localhost";
     public static final int SERVER_PORT_NUMBER = 6789;
     public static final int BUFFER_SIZE = 1000;
+    public static final int LRU_CACHE_SIZE = 100;
 
 
     public static final int MESSAGE_ID_LENGTH = 16;             // number of alphanumeric characters in each message id
@@ -18,6 +19,7 @@ public class Constants {
     public static final int MESSAGE_INFO_START_INDEX = 20;
 
     /* Option codes for each action to be taken at the server */
+    public static final int CACHED_REPLY = 0;
     public static final int ACC_CREATION_CODE = 1;                   // integer code for opening an account
     public static final int ACC_BALANCE_CODE = 8;                   // integer code for account balance query
     public static final int ACC_CLOSING_CODE = 4;                     // integer code to close an account

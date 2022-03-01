@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import static utils.Constants.*;
 import static utils.SocketFunctions.sendRequest;
 import static utils.UtilityFunctions.*;
+import static utils.MarshallFunctions.*;
 
 
 public class ClientInterface {

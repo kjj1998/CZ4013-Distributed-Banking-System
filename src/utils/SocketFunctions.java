@@ -65,4 +65,17 @@ public class SocketFunctions {
             ioException.printStackTrace();
         }
     }
+    
+    /**
+     * Function to send reply form server to client
+     *
+     * @param reply Reply in the form of a datagram packet
+     */
+    public static void sendReply(DatagramPacket reply){
+        try (DatagramSocket aSocket = new DatagramSocket(6789)) {
+            aSocket.send(reply);
+        } catch (IOException ioException){
+            ioException.printStackTrace();
+        }
+    }
 }
