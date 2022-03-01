@@ -95,7 +95,7 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, closeAccByteArray, accNumberByteArray, nameByteArray, passwordByteArray);
         
-        String reply = new String(sendRequest(marshall,atLeastOnce), StandardCharsets.UTF_8);
+        byte[] reply = sendRequest(marshall,atLeastOnce);
 
         Pointer pointer = new Pointer(0);
         String statusCode = unmarshall(pointer, reply);
