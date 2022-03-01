@@ -107,7 +107,7 @@ public class ClientInterface {
             case UNAUTHORIZED:
                 throw new IllegalArgumentException(UNAUTHORIZED);
             default:
-                throw new Exception();
+                throw new Exception();}
     }
 
     public static double depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) {
@@ -121,7 +121,7 @@ public class ClientInterface {
         byte[] nameLengthByteArray = ByteBuffer.allocate(4).putInt(nameLength).array();
         byte[] nameByteArray = convertStringToByteArray(name);
         byte[] accNumberLengthByteArray = ByteBuffer.allocate(4).putInt(accNumberLength).array();
-        byte[] accNumberByteArray = convertStringToByteArray(Integer.toString(accNumber));
+        byte[] accNumberByteArray = convertStringToByteArray(accNumber);
         byte[] passwordLengthByteArray = ByteBuffer.allocate(4).putInt(passwordLength).array();
         byte[] passwordByteArray = convertStringToByteArray(password);
         byte[] currencyLengthByteArray = ByteBuffer.allocate(4).putInt(currencyLength).array();
@@ -157,7 +157,7 @@ public class ClientInterface {
         byte[] nameLengthByteArray = ByteBuffer.allocate(4).putInt(nameLength).array();
         byte[] nameByteArray = convertStringToByteArray(name);
         byte[] accNumberLengthByteArray = ByteBuffer.allocate(4).putInt(accNumberLength).array();
-        byte[] accNumberByteArray = convertStringToByteArray(Integer.toString(accNumber));
+        byte[] accNumberByteArray = convertStringToByteArray(accNumber);
         byte[] passwordLengthByteArray = ByteBuffer.allocate(4).putInt(passwordLength).array();
         byte[] passwordByteArray = convertStringToByteArray(password);
         byte[] currencyLengthByteArray = ByteBuffer.allocate(4).putInt(currencyLength).array();
@@ -183,11 +183,11 @@ public class ClientInterface {
         return currentAccBalance;
     }
 
-    public static double transferMoney(String name, String accNumber,String password,int toAccNumber,Currency currency, double withdraw,boolean atLeastOnce) {
+    public static double transferMoney(String name, String accNumber,String password,String toAccNumber,Currency currency, double withdraw,boolean atLeastOnce) {
         int nameLength = name.length();
         int accNumberLength = accNumber.length();
         int passwordLength = password.length();
-        int toAccNumberLength = Integer.toString(toAccNumber).length();
+        int toAccNumberLength = toAccNumber.length();
         int currencyLength = currency.toString().length();
         int withdrawLength = String.valueOf(withdraw).length();
         
@@ -195,11 +195,11 @@ public class ClientInterface {
         byte[] nameLengthByteArray = ByteBuffer.allocate(4).putInt(nameLength).array();
         byte[] nameByteArray = convertStringToByteArray(name);
         byte[] accNumberLengthByteArray = ByteBuffer.allocate(4).putInt(accNumberLength).array();
-        byte[] accNumberByteArray = convertStringToByteArray(Integer.toString(accNumber));
+        byte[] accNumberByteArray = convertStringToByteArray(accNumber);
         byte[] passwordLengthByteArray = ByteBuffer.allocate(4).putInt(passwordLength).array();
         byte[] passwordByteArray = convertStringToByteArray(password);
         byte[] toAccNumberLengthByteArray = ByteBuffer.allocate(4).putInt(toAccNumberLength).array();
-        byte[] toAccNumberByteArray = convertStringToByteArray(Integer.toString(toAccNumber));
+        byte[] toAccNumberByteArray = convertStringToByteArray(toAccNumber);
         byte[] currencyLengthByteArray = ByteBuffer.allocate(4).putInt(currencyLength).array();
         byte[] currencyByteArray = convertStringToByteArray(currency.toString());
         byte[] withdrawLengthByteArray = ByteBuffer.allocate(4).putInt(withdrawLength).array();
