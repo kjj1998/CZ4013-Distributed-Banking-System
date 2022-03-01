@@ -40,25 +40,23 @@ public class Client {
                         currency = readCurrencyInput();
                         password = readPassword(NEW);
                         initialBalance = readMoney(NEW);
-                        temp = createAccount(name, currency, password, initialBalance);
+                        temp = createAccount(name, currency, password, initialBalance,atLeastOnce);
 
                         System.out.println("Account created with the following details");
                         System.out.println("------------------------------------------");
                         assert temp != null : "Account object is null";
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
-                        String name = readNameInput();
+                        name = readNameInput();
                         Currency chosenCurrency = readCurrencyInput();
                         break;
                     }
                     case DEPOSIT_MONEY_CODE:{
                         System.out.println("Depositing money...");                    
-                        String name = readNameInput();
-                        System.out.println("Enter your account number: ");
-                        int accNumber = scanner.nextInt();
-                        scanner.nextLine();  
-                        System.out.println("Enter the password: ");
-                        String password = scanner.nextLine();
-                        Currency currency = readCurrencyInput();
+                        name = readNameInput();
+                        accNumber = readAccountNumber();
+                        password = readPassword(EXISTING);
+                        currency = readCurrencyInput();
+
                         System.out.println("Enter the amount to deposit: ");
                         double deposit = scanner.nextDouble();
                         scanner.nextLine(); 
@@ -68,13 +66,10 @@ public class Client {
                     }
                     case WITHDRAW_MONEY_CODE:{
                         System.out.println("Withdrawing money...");                  
-                        String name = readNameInput();
-                        System.out.println("Enter your account number: ");
-                        int accNumber = scanner.nextInt();
-                        scanner.nextLine();  
-                        System.out.println("Enter the password: ");
-                        String password = scanner.nextLine();
-                        Currency currency = readCurrencyInput();
+                        name = readNameInput();
+                        accNumber = readAccountNumber();
+                        password = readPassword(EXISTING);
+                        currency = readCurrencyInput();
                         System.out.println("Enter the amount to withdraw: ");
                         double withdraw = scanner.nextDouble();
                         scanner.nextLine(); 
@@ -87,23 +82,20 @@ public class Client {
                         accNumber = readAccountNumber();
                         name = readNameInput();
                         password = readPassword(EXISTING);
-                        temp = closeAccount(name, password, accNumber);
+                        temp = closeAccount(name, password, accNumber,atLeastOnce);
 
                         System.out.println("The following account is closed");
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
 
                     case TRANSFER_MONEY_CODE:{
                         System.out.println("Transfering money...");                
-                        String name = readNameInput();
-                        System.out.println("Enter your account number: ");
-                        int accNumber = scanner.nextInt();
-                        scanner.nextLine();  
-                        System.out.println("Enter the password: ");
-                        String password = scanner.nextLine();
+                        name = readNameInput();
+                        accNumber = readAccountNumber();
+                        password = readPassword(EXISTING);
+                        currency = readCurrencyInput();
+
                         System.out.println("Enter the account number to transfer to: ");
                         int toAccNumber = scanner.nextInt();
-                        scanner.nextLine();  
-                        Currency currency = readCurrencyInput();
                         System.out.println("Enter the amount to transfer: ");
                         double transfer = scanner.nextDouble();
                         scanner.nextLine(); 
@@ -115,7 +107,7 @@ public class Client {
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
 
-                        temp = queryAccBalance(accNumber, password);
+                        temp = queryAccBalance(accNumber, password,atLeastOnce);
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
                         break;
                     
