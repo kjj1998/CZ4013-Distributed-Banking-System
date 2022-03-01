@@ -115,7 +115,7 @@ public class ServerInterface {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
-    public static double depositMoney(byte[] request, HashMap<Integer, Account> accMapping){
+    public static double depositMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
@@ -144,7 +144,7 @@ public class ServerInterface {
         queriedAccount.deposit(deposit);
         return queriedAccount.getAccBalance();
     }
-    public static double withdrawMoney(byte[] request, HashMap<Integer, Account> accMapping){
+    public static double withdrawMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
@@ -174,7 +174,7 @@ public class ServerInterface {
         return queriedAccount.getAccBalance();
     }
 
-    public static double transferMoney(byte[] request, HashMap<Integer, Account> accMapping){
+    public static double transferMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
