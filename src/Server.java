@@ -69,6 +69,7 @@ public class Server {
                         System.out.println("Account closed");
                     case DEPOSIT_MONEY_CODE:
                     {
+                        System.out.println("Depositing money...");
                         double currentBalance = depositMoney(info, accMapping);
                         System.out.println("current balance: " + currentBalance);
                         reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
