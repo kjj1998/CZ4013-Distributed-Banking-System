@@ -11,9 +11,10 @@ import static utils.ReadingInputs.*;
 public class Client {
     public static void main(String[] args) {
         boolean end = false;
-        String name, password, initialBalance, accNumber;
+        String name, password, initialBalance, accNumber,toAccNumber;
         Currency currency;
         Account temp;
+        Double deposit, withdraw, transfer;
         //If atLeastonce schematic is used, set atLeaseOnce as true
         boolean atLeastOnce=true;
 
@@ -54,10 +55,7 @@ public class Client {
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
                         currency = readCurrencyInput();
-
-                        System.out.println("Enter the amount to deposit: ");
-                        double deposit = scanner.nextDouble();
-                        scanner.nextLine(); 
+                        deposit = readDeposit();
                         double balance = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);  
                         //double balance = depositMoney("John", 123, "123", Currency.SGD, 1000, atLeastOnce);                   
                         break;
@@ -68,9 +66,7 @@ public class Client {
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
                         currency = readCurrencyInput();
-                        System.out.println("Enter the amount to withdraw: ");
-                        double withdraw = scanner.nextDouble();
-                        scanner.nextLine(); 
+                        withdraw = readTransfer();
                         double balance = withdrawMoney(name,accNumber,password,currency,withdraw,atLeastOnce);                        
                         break;
                     }
@@ -90,13 +86,9 @@ public class Client {
                         name = readNameInput();
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
+                        toAccNumber=readRecipientAccountNumber();
                         currency = readCurrencyInput();
-
-                        System.out.println("Enter the account number to transfer to: ");
-                        int toAccNumber = scanner.nextInt();
-                        System.out.println("Enter the amount to transfer: ");
-                        double transfer = scanner.nextDouble();
-                        scanner.nextLine(); 
+                        transfer=readTransfer();
                         double balance = transferMoney(name,accNumber,password,toAccNumber,currency,transfer,atLeastOnce);                        
                         break;
                     }
