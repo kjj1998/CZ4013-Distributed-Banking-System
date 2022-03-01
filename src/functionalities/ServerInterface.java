@@ -115,4 +115,102 @@ public class ServerInterface {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
+    public static double depositMoney(byte[] request, HashMap<Integer, Account> accMapping){
+        Pointer val = new Pointer(0);
+
+        String name = unmarshall(val, request);
+        int accNumber = Integer.parseInt(unmarshall(val, request));
+        String password = unmarshall(val, request);
+        String currency = unmarshall(val, request);
+        double deposit = round(Double.parseDouble(unmarshall(val, request)), 2);
+
+        //Check for acc number
+        if (!accMapping.containsKey(accNumber))
+        {
+            System.out.println("Invalid account number!");
+            throw new IllegalArgumentException();
+        }
+        Account queriedAccount = accMapping.get(accNumber);
+        //Check for password
+        if (queriedAccount.verifyPassword(password)==false) {
+            System.out.println("Invalid password!");
+            throw new IllegalArgumentException();
+        }
+        //Check for name
+        if (queriedAccount.verifyName(name)==false) {
+            System.out.println("Wrong name!");
+            throw new IllegalArgumentException();
+        }
+        queriedAccount.deposit(deposit);
+        return queriedAccount.getAccBalance();
+    }
+    public static double withdrawMoney(byte[] request, HashMap<Integer, Account> accMapping){
+        Pointer val = new Pointer(0);
+
+        String name = unmarshall(val, request);
+        int accNumber = Integer.parseInt(unmarshall(val, request));
+        String password = unmarshall(val, request);
+        String currency = unmarshall(val, request);
+        double withdraw = round(Double.parseDouble(unmarshall(val, request)), 2);
+
+        //Check for acc number
+        if (!accMapping.containsKey(accNumber))
+        {
+            System.out.println("Invalid account number!");
+            throw new IllegalArgumentException();
+        }
+        Account queriedAccount = accMapping.get(accNumber);
+        //Check for password
+        if (queriedAccount.verifyPassword(password)==false) {
+            System.out.println("Invalid password!");
+            throw new IllegalArgumentException();
+        }
+        //Check for name
+        if (queriedAccount.verifyName(name)==false) {
+            System.out.println("Wrong name!");
+            throw new IllegalArgumentException();
+        }
+        queriedAccount.withdraw(withdraw);
+        return queriedAccount.getAccBalance();
+    }
+
+    public static double transferMoney(byte[] request, HashMap<Integer, Account> accMapping){
+        Pointer val = new Pointer(0);
+
+        String name = unmarshall(val, request);
+        int accNumber = Integer.parseInt(unmarshall(val, request));
+        String password = unmarshall(val, request);
+        int toAccNumber = Integer.parseInt(unmarshall(val, request));
+        String currency = unmarshall(val, request);
+        double transfer = round(Double.parseDouble(unmarshall(val, request)), 2);
+
+        //Check for acc number
+        if (!accMapping.containsKey(accNumber))
+        {
+            System.out.println("Invalid account number!");
+            throw new IllegalArgumentException();
+        }
+        Account queriedAccount = accMapping.get(accNumber);
+        //Check for password
+        if (queriedAccount.verifyPassword(password)==false) {
+            System.out.println("Invalid password!");
+            throw new IllegalArgumentException();
+        }
+        //Check for name
+        if (queriedAccount.verifyName(name)==false) {
+            System.out.println("Wrong name!");
+            throw new IllegalArgumentException();
+        }
+
+        if (!accMapping.containsKey(toAccNumber))
+        {
+            System.out.println("Invalid receipient account number!");
+            throw new IllegalArgumentException();
+        }
+        Account receipientAccount = accMapping.get(toAccNumber);
+
+        receipientAccount.deposit(transfer);
+        queriedAccount.withdraw(transfer);
+        return queriedAccount.getAccBalance();
+    }
 }
