@@ -70,23 +70,25 @@ public class Server {
                     case DEPOSIT_MONEY_CODE:
                     {
                         System.out.println("Depositing money...");
-                        double currentBalance = depositMoney(info, accMapping);
-                        System.out.println("current balance: " + currentBalance);
-                        reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
+                        reply = depositMoney(info, accMapping);
+                        replyHistory.putReply(messageID, reply);
+                        System.out.println("Money deposited");
                         break;
                     }
                     case WITHDRAW_MONEY_CODE:
                     {
-                        double currentBalance = withdrawMoney(info, accMapping);
-                        System.out.println("current balance: " + currentBalance);
-                        reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
+                        System.out.println("Withdrawing money...");
+                        reply = withdrawMoney(info, accMapping);
+                        replyHistory.putReply(messageID, reply);
+                        System.out.println("Money withdrawn");
                         break;
                     }
                     case TRANSFER_MONEY_CODE:
                     {
-                        double currentBalance = transferMoney(info, accMapping);
-                        System.out.println("current balance: " + currentBalance);
-                        reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
+                        System.out.println("Transfering money...");
+                        reply = transferMoney(info, accMapping);
+                        replyHistory.putReply(messageID, reply);
+                        System.out.println("Money transferred");
                         break;
                     }
                     case CACHED_REPLY:
