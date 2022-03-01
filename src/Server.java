@@ -67,12 +67,31 @@ public class Server {
                         reply = processAccClosure(info, accMapping);
                         replyHistory.putReply(messageID, reply);
                         System.out.println("Account closed");
+                    case DEPOSIT_MONEY_CODE:
+                    {
+                        double currentBalance = depositMoney(info, accMapping);
+                        System.out.println("current balance: " + currentBalance);
+                        reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
                         break;
+                    }
+                    case WITHDRAW_MONEY_CODE:
+                    {
+                        double currentBalance = withdrawMoney(info, accMapping);
+                        System.out.println("current balance: " + currentBalance);
+                        reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
+                        break;
+                    }
+                    case TRANSFER_MONEY_CODE:
+                    {
+                        double currentBalance = transferMoney(info, accMapping);
+                        System.out.println("current balance: " + currentBalance);
+                        reply = ByteBuffer.allocate(8).putDouble(currentBalance).array();
+                        break;
+                    }
                     case CACHED_REPLY:
                         System.out.println("Sending reply from cache");
                         break;
-                }
-
+                    }
                 sendReply(request, reply);      // send to client the reply message
             } catch (IllegalArgumentException validationError) {
                 if (Objects.equals(validationError.getMessage(), NOT_FOUND)) {
