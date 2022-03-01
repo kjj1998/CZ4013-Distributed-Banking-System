@@ -103,6 +103,35 @@ public class ReadingInputs {
         }
     }
 
+    public static Double readDeposit() {
+        while (true) {
+            System.out.println("Enter the amount to deposit: ");
+            String amt = scanner.nextLine();
+            if (verifyMoney(amt))
+                return Double.parseDouble(amt);
+            System.out.println("Invalid input, not in dollars and cents");
+        }
+    }
+
+    public static Double readWithdraw() {
+        while (true) {
+            System.out.println("Enter the amount to withdraw: ");
+            String amt = scanner.nextLine();
+            if (verifyMoney(amt))
+                return Double.parseDouble(amt);
+            System.out.println("Invalid input, not in dollars and cents");
+        }
+    }
+
+    public static Double readTransfer() {
+        while (true) {
+            System.out.println("Enter the amount to transfer: ");
+            String amt = scanner.nextLine();
+            if (verifyMoney(amt))
+                return Double.parseDouble(amt);
+            System.out.println("Invalid input, not in dollars and cents");
+        }
+    }
     /**
      * A function to read in the account number
      * @return the account number string
@@ -110,6 +139,16 @@ public class ReadingInputs {
     public static String readAccountNumber() {
         while (true) {
             System.out.println("Enter account number: ");
+            String accNumber = scanner.nextLine();
+            if (verifyAccNumber(accNumber))
+                return accNumber;
+            System.out.println("Invalid account number entered");
+        }
+    }
+
+    public static String readRecipientAccountNumber() {
+        while (true) {
+            System.out.println("Enter recipient account number: ");
             String accNumber = scanner.nextLine();
             if (verifyAccNumber(accNumber))
                 return accNumber;
