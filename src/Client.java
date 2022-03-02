@@ -56,8 +56,7 @@ public class Client {
                         password = readPassword(EXISTING);
                         currency = readCurrencyInput();
                         deposit = readDeposit();
-                        double balance = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);  
-                        //double balance = depositMoney("John", 123, "123", Currency.SGD, 1000, atLeastOnce);                   
+                        double balance = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);                   
                         break;
                     }
                     case WITHDRAW_MONEY_CODE:{
