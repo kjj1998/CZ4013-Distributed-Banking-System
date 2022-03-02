@@ -128,7 +128,7 @@ public class ClientInterface {
                 throw new Exception();}
     }
 
-    public static Account depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) {
+    public static Account depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) throws Exception {
         byte[] depositMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(DEPOSIT_MONEY_CODE).array();
         byte[] nameByteArray = marshall(name);
         byte[] accNumberByteArray = marshall(accNumber);
@@ -155,9 +155,8 @@ public class ClientInterface {
             case UNAUTHORIZED:
                 throw new IllegalArgumentException(UNAUTHORIZED);
             default:
-                throw new Exception();
-        }
-    }
+                throw new Exception();}        
+    }    
     public static double withdrawMoney(String name, String accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce) {
         int nameLength = name.length();
         int accNumberLength = accNumber.length();
