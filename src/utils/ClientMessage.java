@@ -16,4 +16,8 @@ public class ClientMessage {
         System.out.println("Currency: " + currency.toString());
         System.out.printf("Account balance: $%.2f\n", balance);
     }
+
+    public static void DisplayBalance(double balance) {
+        System.out.printf("Account balance: $%.2f\n", balance);
+    }
 }
