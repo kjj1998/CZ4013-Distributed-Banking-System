@@ -37,6 +37,12 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, accCreationByteArray, nameByteArray, currencyByteArray, passwordByteArray, accBalanceArray);
 
         byte[] reply = sendRequest(marshall,atLeastOnce); //send atLeastOnce
+        if (atLeastOnce){
+            while(reply==null){
+                reply=sendRequest(marshall, atLeastOnce);
+                System.out.println("Resending Message");
+            }
+        }
         
         Pointer val = new Pointer(0);
         String statusCode = unmarshall(val, reply);
@@ -68,6 +74,12 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, accBalanceQueryByteArray, accNumberByteArray, passwordByteArray);
 
         byte[] reply = sendRequest(marshall,atLeastOnce);
+        if (atLeastOnce){
+            while(reply==null){
+                reply=sendRequest(marshall, atLeastOnce);
+                System.out.println("Resending Message");
+            }
+        }
 
         Pointer pointer = new Pointer(0);
         String statusCode = unmarshall(pointer, reply);
@@ -96,6 +108,12 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, closeAccByteArray, accNumberByteArray, nameByteArray, passwordByteArray);
         
         byte[] reply = sendRequest(marshall,atLeastOnce);
+        if (atLeastOnce){
+            while(reply==null){
+                reply=sendRequest(marshall, atLeastOnce);
+                System.out.println("Resending Message");
+            }
+        }
 
         Pointer pointer = new Pointer(0);
         String statusCode = unmarshall(pointer, reply);
@@ -110,41 +128,35 @@ public class ClientInterface {
                 throw new Exception();}
     }
 
-    public static double depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) {
-        int nameLength = name.length();
-        int accNumberLength = accNumber.length();
-        int passwordLength = password.length();
-        int currencyLength = currency.toString().length();
-        int depositLength = String.valueOf(deposit).length();
-        
-        byte[] depositMoneyByteArray = ByteBuffer.allocate(4).putInt(2).array();
-        byte[] nameLengthByteArray = ByteBuffer.allocate(4).putInt(nameLength).array();
-        byte[] nameByteArray = convertStringToByteArray(name);
-        byte[] accNumberLengthByteArray = ByteBuffer.allocate(4).putInt(accNumberLength).array();
-        byte[] accNumberByteArray = convertStringToByteArray(accNumber);
-        byte[] passwordLengthByteArray = ByteBuffer.allocate(4).putInt(passwordLength).array();
-        byte[] passwordByteArray = convertStringToByteArray(password);
-        byte[] currencyLengthByteArray = ByteBuffer.allocate(4).putInt(currencyLength).array();
-        byte[] currencyByteArray = convertStringToByteArray(currency.toString());
-        byte[] depositLengthByteArray = ByteBuffer.allocate(4).putInt(depositLength).array();
-        byte[] depositByteArray = convertStringToByteArray(String.valueOf(deposit));
-            
-        String messageID = gen.nextString();
-        System.out.println("MessageId: "+messageID);
-        byte[] messageIDArray = convertStringToByteArray(messageID);
-    
-        byte[] marshall = concatWithCopy(messageIDArray, depositMoneyByteArray, nameLengthByteArray, nameByteArray,accNumberLengthByteArray,accNumberByteArray,passwordLengthByteArray, passwordByteArray,currencyLengthByteArray, currencyByteArray,depositLengthByteArray,depositByteArray);
+    public static Account depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) {
+        byte[] depositMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(DEPOSIT_MONEY_CODE).array();
+        byte[] nameByteArray = marshall(name);
+        byte[] accNumberByteArray = marshall(accNumber);
+        byte[] passwordByteArray = marshall(password);
+        byte[] currencyByteArray = marshall(currency.name());
+        byte[] depositByteArray = marshall(String.valueOf(deposit));
+        byte[] messageIDArray = convertStringToByteArray(gen.nextString());
+        byte[] marshall = concatWithCopy(messageIDArray, depositMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,depositByteArray);
     
         byte[] reply = sendRequest(marshall,atLeastOnce);
         if (atLeastOnce){
             while(reply==null){
                 reply=sendRequest(marshall, atLeastOnce);
-                System.out.println("Resending MessageId: "+messageID);
+                System.out.println("Resending Message");
             }
         }
-        double currentAccBalance = ByteBuffer.wrap(reply).getDouble();
-        System.out.println("Current account balance: " + currentAccBalance);
-        return currentAccBalance;
+        Pointer pointer = new Pointer(0);
+        String statusCode = unmarshall(pointer, reply);
+        switch (statusCode) {
+            case OK:
+                return unmarshallAccount(pointer, reply);
+            case NOT_FOUND:
+                throw new IllegalArgumentException(NOT_FOUND);
+            case UNAUTHORIZED:
+                throw new IllegalArgumentException(UNAUTHORIZED);
+            default:
+                throw new Exception();
+        }
     }
     public static double withdrawMoney(String name, String accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce) {
         int nameLength = name.length();
@@ -175,7 +187,7 @@ public class ClientInterface {
         if (atLeastOnce){
             while(reply==null){
                 reply=sendRequest(marshall, atLeastOnce);
-                System.out.println("Resending MessageId: "+messageID);
+                System.out.println("Resending Message");
             }
         }
         double currentAccBalance = ByteBuffer.wrap(reply).getDouble();
@@ -215,7 +227,7 @@ public class ClientInterface {
         if (atLeastOnce){
             while(reply==null){
                 reply=sendRequest(marshall, atLeastOnce);
-                System.out.println("Resending MessageId: "+messageID);
+                System.out.println("Resending Message");
             }
         }
         double currentAccBalance = ByteBuffer.wrap(reply).getDouble();
