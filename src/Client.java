@@ -56,7 +56,7 @@ public class Client {
                         password = readPassword(EXISTING);
                         currency = readCurrencyInput();
                         deposit = readDeposit();
-                        
+
                         temp = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);
                         assert temp != null : "Account object is null";
                         System.out.println("Deposit done!");   
@@ -69,9 +69,13 @@ public class Client {
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
                         currency = readCurrencyInput();
-                        withdraw = readTransfer();
-                        double balance = withdrawMoney(name,accNumber,password,currency,withdraw,atLeastOnce);                        
-                        break;
+                        withdraw = readWithdraw();
+
+                        temp = withdrawMoney(name,accNumber,password,currency,withdraw,atLeastOnce);
+                        assert temp != null : "Account object is null";
+                        System.out.println("Withdraw done!");   
+                        DisplayBalance(temp.getAccBalance());
+                        break;                      
                     }
                     case ACC_CLOSING_CODE:
                         System.out.println("Closing account...");
@@ -92,8 +96,12 @@ public class Client {
                         toAccNumber=readRecipientAccountNumber();
                         currency = readCurrencyInput();
                         transfer=readTransfer();
-                        double balance = transferMoney(name,accNumber,password,toAccNumber,currency,transfer,atLeastOnce);                        
-                        break;
+
+                        temp = transferMoney(name,accNumber,password,currency,withdraw,atLeastOnce);
+                        assert temp != null : "Account object is null";
+                        System.out.println("Transfer done!");   
+                        DisplayBalance(temp.getAccBalance());
+                        break;      
                     }
                     case ACC_BALANCE_CODE:
                         System.out.println("Querying account balance...");
