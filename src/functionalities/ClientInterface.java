@@ -157,30 +157,15 @@ public class ClientInterface {
             default:
                 throw new Exception();}        
     }    
-    public static double withdrawMoney(String name, String accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce) {
-        int nameLength = name.length();
-        int accNumberLength = accNumber.length();
-        int passwordLength = password.length();
-        int currencyLength = currency.toString().length();
-        int withdrawLength = String.valueOf(withdraw).length();
-        
-        byte[] withdrawMoneyByteArray = ByteBuffer.allocate(4).putInt(3).array();
-        byte[] nameLengthByteArray = ByteBuffer.allocate(4).putInt(nameLength).array();
-        byte[] nameByteArray = convertStringToByteArray(name);
-        byte[] accNumberLengthByteArray = ByteBuffer.allocate(4).putInt(accNumberLength).array();
-        byte[] accNumberByteArray = convertStringToByteArray(accNumber);
-        byte[] passwordLengthByteArray = ByteBuffer.allocate(4).putInt(passwordLength).array();
-        byte[] passwordByteArray = convertStringToByteArray(password);
-        byte[] currencyLengthByteArray = ByteBuffer.allocate(4).putInt(currencyLength).array();
-        byte[] currencyByteArray = convertStringToByteArray(currency.toString());
-        byte[] withdrawLengthByteArray = ByteBuffer.allocate(4).putInt(withdrawLength).array();
-        byte[] withdrawByteArray = convertStringToByteArray(String.valueOf(withdraw));
-            
-        String messageID = gen.nextString();
-        System.out.println("MessageId: "+messageID);
-        byte[] messageIDArray = convertStringToByteArray(messageID);
-    
-        byte[] marshall = concatWithCopy(messageIDArray, withdrawMoneyByteArray, nameLengthByteArray, nameByteArray,accNumberLengthByteArray,accNumberByteArray,passwordLengthByteArray, passwordByteArray,currencyLengthByteArray, currencyByteArray,withdrawLengthByteArray,withdrawByteArray);
+    public static Account withdrawMoney(String name, String accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce)throws Exception {
+        byte[] withdrawMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(WITHDRAW_MONEY_CODE).array();
+        byte[] nameByteArray = marshall(name);
+        byte[] accNumberByteArray = marshall(accNumber);
+        byte[] passwordByteArray = marshall(password);
+        byte[] currencyByteArray = marshall(currency.name());
+        byte[] withdrawByteArray = marshall(String.valueOf(withdraw));
+        byte[] messageIDArray = convertStringToByteArray(gen.nextString());
+        byte[] marshall = concatWithCopy(messageIDArray, withdrawMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,withdrawByteArray);
     
         byte[] reply = sendRequest(marshall,atLeastOnce);
         if (atLeastOnce){
@@ -189,38 +174,30 @@ public class ClientInterface {
                 System.out.println("Resending Message");
             }
         }
-        double currentAccBalance = ByteBuffer.wrap(reply).getDouble();
-        System.out.println("Current account balance: " + currentAccBalance);
-        return currentAccBalance;
+        Pointer pointer = new Pointer(0);
+        String statusCode = unmarshall(pointer, reply);
+        switch (statusCode) {
+            case OK:
+                return unmarshallAccount(pointer, reply);
+            case NOT_FOUND:
+                throw new IllegalArgumentException(NOT_FOUND);
+            case UNAUTHORIZED:
+                throw new IllegalArgumentException(UNAUTHORIZED);
+            default:
+                throw new Exception();}        
     }
 
-    public static double transferMoney(String name, String accNumber,String password,String toAccNumber,Currency currency, double withdraw,boolean atLeastOnce) {
-        int nameLength = name.length();
-        int accNumberLength = accNumber.length();
-        int passwordLength = password.length();
-        int toAccNumberLength = toAccNumber.length();
-        int currencyLength = currency.toString().length();
-        int withdrawLength = String.valueOf(withdraw).length();
-        
-        byte[] withdrawMoneyByteArray = ByteBuffer.allocate(4).putInt(3).array();
-        byte[] nameLengthByteArray = ByteBuffer.allocate(4).putInt(nameLength).array();
-        byte[] nameByteArray = convertStringToByteArray(name);
-        byte[] accNumberLengthByteArray = ByteBuffer.allocate(4).putInt(accNumberLength).array();
-        byte[] accNumberByteArray = convertStringToByteArray(accNumber);
-        byte[] passwordLengthByteArray = ByteBuffer.allocate(4).putInt(passwordLength).array();
-        byte[] passwordByteArray = convertStringToByteArray(password);
-        byte[] toAccNumberLengthByteArray = ByteBuffer.allocate(4).putInt(toAccNumberLength).array();
-        byte[] toAccNumberByteArray = convertStringToByteArray(toAccNumber);
-        byte[] currencyLengthByteArray = ByteBuffer.allocate(4).putInt(currencyLength).array();
-        byte[] currencyByteArray = convertStringToByteArray(currency.toString());
-        byte[] withdrawLengthByteArray = ByteBuffer.allocate(4).putInt(withdrawLength).array();
-        byte[] withdrawByteArray = convertStringToByteArray(String.valueOf(withdraw));
-            
-        String messageID = gen.nextString();
-        System.out.println("MessageId: "+messageID);
-        byte[] messageIDArray = convertStringToByteArray(messageID);
-    
-        byte[] marshall = concatWithCopy(messageIDArray, withdrawMoneyByteArray, nameLengthByteArray, nameByteArray,accNumberLengthByteArray,accNumberByteArray,passwordLengthByteArray, passwordByteArray,toAccNumberLengthByteArray,toAccNumberByteArray,currencyLengthByteArray, currencyByteArray,withdrawLengthByteArray,withdrawByteArray);
+    public static Account transferMoney(String name, String accNumber,String password,String toAccNumber,Currency currency, double withdraw,boolean atLeastOnce)throws Exception {
+
+        byte[] transferMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(TRANSFER_MONEY_CODE).array();
+        byte[] nameByteArray = marshall(name);
+        byte[] accNumberByteArray = marshall(accNumber);
+        byte[] passwordByteArray = marshall(password);
+        byte[] toAccNumberByteArray = marshall(toAccNumber);
+        byte[] currencyByteArray = marshall(currency.name());
+        byte[] transferByteArray = marshall(String.valueOf(transfer));
+        byte[] messageIDArray = convertStringToByteArray(gen.nextString());
+        byte[] marshall = concatWithCopy(messageIDArray, transferMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,toAccNumberByteArray,currencyByteArray,transferByteArray);
     
         byte[] reply = sendRequest(marshall,atLeastOnce);
         if (atLeastOnce){
@@ -229,8 +206,17 @@ public class ClientInterface {
                 System.out.println("Resending Message");
             }
         }
-        double currentAccBalance = ByteBuffer.wrap(reply).getDouble();
-        System.out.println("Current account balance: " + currentAccBalance);
-        return currentAccBalance;
+        Pointer pointer = new Pointer(0);
+        String statusCode = unmarshall(pointer, reply);
+        switch (statusCode) {
+            case OK:
+                return unmarshallAccount(pointer, reply);
+            case NOT_FOUND:
+                throw new IllegalArgumentException(NOT_FOUND);
+            case UNAUTHORIZED:
+                throw new IllegalArgumentException(UNAUTHORIZED);
+            default:
+                throw new Exception();}        
+    }
     }
 }
