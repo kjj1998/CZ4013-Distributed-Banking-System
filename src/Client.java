@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import static functionalities.ClientInterface.*;
-import static utils.ClientMessage.DisplayAccountDetails;
+import static utils.ClientMessage.*;
 import static utils.Constants.*;
 import static utils.ReadingInputs.*;
 
@@ -56,7 +56,11 @@ public class Client {
                         password = readPassword(EXISTING);
                         currency = readCurrencyInput();
                         deposit = readDeposit();
-                        double balance = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);                   
+                        
+                        temp = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);
+                        assert temp != null : "Account object is null";
+                        System.out.println("Deposit done!");   
+                        DisplayBalance(temp.getAccBalance());
                         break;
                     }
                     case WITHDRAW_MONEY_CODE:{
