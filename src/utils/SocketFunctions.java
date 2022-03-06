@@ -1,13 +1,16 @@
 package utils;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import objects.Account;
+import objects.Pointer;
 
+import java.io.IOException;
+import java.net.*;
+import java.time.LocalDateTime;
+
+import static utils.ClientMessage.DisplayAccountDetailsMonitoring;
 import static utils.Constants.*;
-import static utils.Constants.SERVER_PORT_NUMBER;
+import static utils.MarshallFunctions.unmarshall;
+import static utils.MarshallFunctions.unmarshallAccount;
 
 public class SocketFunctions {
     /**
@@ -50,6 +53,48 @@ public class SocketFunctions {
         return null;
     }
 
+    public static void sendMonitorRequest(byte[] startMarshall, byte[] endMarshall, Boolean atLeastOnce, int duration) throws IOException {
+        DatagramSocket aSocket = new DatagramSocket();
+        InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
+        DatagramPacket startRequest = new DatagramPacket(startMarshall, startMarshall.length, aHost, SERVER_PORT_NUMBER);
+
+        aSocket.send(startRequest);
+        LocalDateTime endTime = LocalDateTime.now().plusSeconds(duration);
+
+        while (LocalDateTime.now().isBefore(endTime)) {
+            try {
+                byte[] buffer = new byte[BUFFER_SIZE];     // a buffer for receive
+                DatagramPacket update = new DatagramPacket(buffer, buffer.length);
+                aSocket.setSoTimeout(1);
+                aSocket.receive(update);
+
+                Pointer pointer = new Pointer(0);
+                String statusCode = unmarshall(pointer, update.getData());
+                switch (statusCode) {
+                    case OK: {
+                        Account acc = unmarshallAccount(pointer, update.getData());
+                        DisplayAccountDetailsMonitoring(acc.getAccNumber(), acc.getName(), acc.getCurrency(), acc.getAccBalance(), acc.getAction());
+                        System.out.println("Monitoring updates...");
+                        break;
+                    }
+                    case NOT_FOUND:
+                        throw new IllegalArgumentException(NOT_FOUND);
+                    case UNAUTHORIZED:
+                        throw new IllegalArgumentException(UNAUTHORIZED);
+                    default:
+                        throw new Exception();
+                }
+            } catch (SocketTimeoutException ignored) {
+                ;
+            } catch (Exception e) {
+                throw new IOException();
+            }
+        }
+
+        DatagramPacket endRequest = new DatagramPacket(endMarshall, endMarshall.length, aHost, SERVER_PORT_NUMBER);
+        aSocket.send(endRequest);
+    }
+
     /**
      * Function to receive requests from the clients
      *
@@ -82,7 +127,17 @@ public class SocketFunctions {
             ioException.printStackTrace();
         }
     }
-    
+
+    public static void sendMonitorReply(byte[] reply, InetAddress ip, int port) {
+        try (DatagramSocket aSocket = new DatagramSocket(6789)) {
+            DatagramPacket replyPacket = new DatagramPacket(reply, reply.length,
+                    ip, port);
+            aSocket.send(replyPacket);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
     /**
      * Function to send reply form server to client
      *

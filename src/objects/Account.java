@@ -10,6 +10,7 @@ public class Account {
     private String password;
     private double accBalance;
     private final int accNumber;
+    private String action;
 
     public Account(String name, Currency cur, String password, double accBalance, int accNumber) {
         this.name = name;
@@ -19,11 +20,29 @@ public class Account {
         this.accNumber = accNumber;
     }
 
-    public Account(String name, Currency cur, double accBalance, int accNumber) {
+    public Account(String name, Currency cur, double accBalance, int accNumber, String action) {
         this.name = name;
         this.cur = cur;
         this.accBalance = accBalance;
         this.accNumber = accNumber;
+        this.action = action;
+    }
+
+    public Account(String name, Currency cur, String password, double accBalance, int accNumber, String action) {
+        this.name = name;
+        this.cur = cur;
+        this.password = password;
+        this.accBalance = accBalance;
+        this.accNumber = accNumber;
+        this.action = action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getAction() {
+        return action;
     }
 
     public String getAccNumber() {

@@ -35,20 +35,33 @@ public class Constants {
     public static final String WITHDRAW_MONEY_CODE_STRING = "3";       // string code for opening an account
 
     public static final int ACC_CLOSING_CODE = 4;                     // integer code to close an account
-    
+
     public static final int TRANSFER_MONEY_CODE = 5;                   // integer code for opening an account
     public static final String TRANSFER_MONEY_CODE_STRING = "5";       // string code for opening an account
 
     public static final int ACC_BALANCE_CODE = 8;                   // integer code for account balance query
     public static final String ACC_BALANCE_CODE_STRING = "8";       // string code for account balance query
 
+    public static final int ADD_OBSERVERS_FOR_MONITORING_CODE = 6;               // integer code for account to monitor updates
+
+    public static final int REMOVE_OBSERVERS_FROM_MONITORING_CODE = 7;
+
     /* Constants for reading in inputs */
     public static final char NEW = 'n';
     public static final char EXISTING = 'e';
-    
+
     /* Status codes from server */
     public static final String OK = "200";
     public static final String UNAUTHORIZED = "401";
     public static final String INSUFFICIENT = "402";
     public static final String NOT_FOUND = "404";
+
+    /* Constants for actions taken on the accounts */
+    public static final String AccountCreation = "Account Creation";
+    public static final String AccountClosure = "Account Closure";
+    public static final String CheckBalance = "Check Balance";
+    public static final String WithdrawFunds = "Withdrawal of Funds";
+    public static final String DepositFunds = "Deposit of Funds";
+    public static final String TransferFundsIn = "Transfer of Funds In";
+    public static final String TransferFundsOut = "Transfer of Funds Out";
 }

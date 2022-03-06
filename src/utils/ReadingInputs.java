@@ -156,6 +156,23 @@ public class ReadingInputs {
         }
     }
 
-    public static void main(String[] args) {
+    public static int readMonitorDuration() {
+        while (true) {
+            try {
+                System.out.println("Entering monitoring duration (in seconds): ");
+                String duration = scanner.nextLine();
+                return Integer.parseInt(duration);
+            } catch (NumberFormatException invalidFormat) {
+                System.out.println("Invalid input entered");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.print("[#                    ] 1%\r");
+        Thread.sleep(1000);
+        System.out.print("[#########            ] 50%\r");
+        Thread.sleep(1000);
+        System.out.print("[#####################] 100%\n");
     }
 }

@@ -17,6 +17,14 @@ public class ClientMessage {
         System.out.printf("Account balance: $%.2f\n", balance);
     }
 
+    public static void DisplayAccountDetailsMonitoring(String accNumber, String name, Currency currency, double balance, String action) {
+        System.out.println("Action taken: " + action);
+        System.out.println("Account number: " + accNumber);
+        System.out.println("Account holder: " + name);
+        System.out.println("Currency: " + currency.toString());
+        System.out.printf("Account balance: $%.2f\n", balance);
+    }
+
     public static void DisplayBalance(double balance) {
         System.out.printf("Account balance: $%.2f\n", balance);
     }

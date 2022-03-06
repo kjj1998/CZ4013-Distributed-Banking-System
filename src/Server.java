@@ -1,7 +1,9 @@
+import functionalities.Observer;
 import objects.Account;
 import objects.LruReplyHistory;
 
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.*;
 
 import static functionalities.ServerInterface.*;
@@ -13,7 +15,8 @@ import static utils.UtilityFunctions.byteArrayToInt;
 
 public class Server {
     public static Map<Integer, Account> accMapping = new HashMap<>();       // maintain a mapping of account numbers to all accounts currently on the server
-    private static LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);
+    private static final LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);
+    private static final Map<String, Observer> observerMap = new HashMap<>();
 
     public static void main(String[] args) {
         System.out.println("Server started on port " + SERVER_PORT_NUMBER);
@@ -30,6 +33,9 @@ public class Server {
                 assert request != null : "Data from client is null";
                 data = request.getData();                                                           // get the data from the request DatagramPacket
 
+                InetAddress clientIp = request.getAddress();
+                int clientPort = request.getPort();
+                String clientIdentifier = clientPort + clientIp.toString();
                 messageID = new String(Arrays.copyOfRange(data, 0, MESSAGE_ID_LENGTH));             // retrieve the unique message id
                 System.out.printf("\nmessageID: %s\n", messageID);
 
@@ -85,17 +91,35 @@ public class Server {
                     }
                     case TRANSFER_MONEY_CODE:
                     {
-                        System.out.println("Transfering money...");
+                        System.out.println("Transferring money...");
                         reply = transferMoney(info, accMapping);
                         replyHistory.putReply(messageID, reply);
                         System.out.println("Money transferred");
                         break;
                     }
-                    case CACHED_REPLY:
+                    case CACHED_REPLY: {
                         System.out.println("Sending reply from cache");
                         break;
                     }
-                sendReply(request, reply);      // send to client the reply message
+                    case ADD_OBSERVERS_FOR_MONITORING_CODE: {
+                        Observer o = new functionalities.Observer(clientIp, clientPort);
+                        System.out.println("Adding client " + clientIdentifier + " for monitoring");
+                        observerMap.put(clientIdentifier, o);
+                        break;
+                    }
+                    case REMOVE_OBSERVERS_FROM_MONITORING_CODE: {
+                        observerMap.remove(clientIdentifier);
+                        System.out.println("Removing client " + clientIdentifier + " from monitoring");
+                        break;
+                    }
+                }
+
+                if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
+                    sendReply(request, reply);      // send to client the reply message
+                    for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {
+                        entry.getValue().notify(reply);
+                    }
+                }
             } catch (IllegalArgumentException validationError) {
                 if (Objects.equals(validationError.getMessage(), NOT_FOUND)) {
                     assert request != null;

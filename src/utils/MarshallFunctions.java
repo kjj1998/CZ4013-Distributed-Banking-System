@@ -59,7 +59,8 @@ public class MarshallFunctions {
         String name = unmarshall(pointer, reply);
         Currency currency = Currency.valueOf(unmarshall(pointer, reply));
         double accBalance = Double.parseDouble(unmarshall(pointer, reply));
-        return new Account(name, currency, accBalance, accNumber);
+        String accAction = unmarshall(pointer, reply);
+        return new Account(name, currency, accBalance, accNumber, accAction);
     }
 
     /**
@@ -73,7 +74,8 @@ public class MarshallFunctions {
         byte[] nameByteArray = marshall(account.getName());
         byte[] currencyByteArray = marshall(account.getCurrency().name());
         byte[] accBalanceByteArray = marshall(String.valueOf(account.getAccBalance()));
+        byte[] accActionTakenArray = marshall(account.getAction());
 
-        return concatWithCopy(statusCodeByteArray, accountNumberByteArray, nameByteArray, currencyByteArray, accBalanceByteArray);
+        return concatWithCopy(statusCodeByteArray, accountNumberByteArray, nameByteArray, currencyByteArray, accBalanceByteArray, accActionTakenArray);
     }
 }

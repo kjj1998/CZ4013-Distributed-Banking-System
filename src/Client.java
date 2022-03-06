@@ -15,7 +15,8 @@ public class Client {
         Currency currency;
         Account temp;
         Double deposit, withdraw, transfer;
-        //If atLeastonce schematic is used, set atLeaseOnce as true
+        int monitorDuration;
+        //If atLeastOnce schematic is used, set atLeaseOnce as true
         boolean atLeastOnce=true;
 
         System.out.printf("%20s\n","Welcome to CZ4013 Bank!");
@@ -27,6 +28,7 @@ public class Client {
                 System.out.printf("%s\n", "3. Withdraw money");
                 System.out.printf("%s\n", "4. Close an existing account");
                 System.out.printf("%s\n", "5. Transfer money");
+                System.out.printf("%s\n", "6. Monitor updates");
                 System.out.printf("%s\n", "8. Show current account initialBalance");
                 System.out.printf("%s\n", "0. Exit");
 
@@ -50,7 +52,7 @@ public class Client {
                         break;
                     }
                     case DEPOSIT_MONEY_CODE:{
-                        System.out.println("Depositing money...");                    
+                        System.out.println("Depositing money...");
                         name = readNameInput();
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
@@ -59,12 +61,12 @@ public class Client {
 
                         temp = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);
                         assert temp != null : "Account object is null";
-                        System.out.println("Deposit done!");   
+                        System.out.println("Deposit done!");
                         DisplayBalance(temp.getAccBalance());
                         break;
                     }
                     case WITHDRAW_MONEY_CODE:{
-                        System.out.println("Withdrawing money...");                  
+                        System.out.println("Withdrawing money...");
                         name = readNameInput();
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
@@ -73,9 +75,9 @@ public class Client {
 
                         temp = withdrawMoney(name,accNumber,password,currency,withdraw,atLeastOnce);
                         assert temp != null : "Account object is null";
-                        System.out.println("Withdraw done!");   
+                        System.out.println("Withdraw done!");
                         DisplayBalance(temp.getAccBalance());
-                        break;                      
+                        break;
                     }
                     case ACC_CLOSING_CODE:
                         System.out.println("Closing account...");
@@ -89,7 +91,7 @@ public class Client {
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
 
                     case TRANSFER_MONEY_CODE:{
-                        System.out.println("Transfering money...");                
+                        System.out.println("Transferring money...");
                         name = readNameInput();
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
@@ -97,21 +99,28 @@ public class Client {
                         currency = readCurrencyInput();
                         transfer=readTransfer();
 
-                        temp = transferMoney(name,accNumber,password,currency,withdraw,atLeastOnce);
+                        temp = transferMoney(name,accNumber,password, toAccNumber, currency,transfer,atLeastOnce);
                         assert temp != null : "Account object is null";
-                        System.out.println("Transfer done!");   
+                        System.out.println("Transfer done!");
                         DisplayBalance(temp.getAccBalance());
-                        break;      
+                        break;
                     }
-                    case ACC_BALANCE_CODE:
+                    case ACC_BALANCE_CODE: {
                         System.out.println("Querying account balance...");
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
 
-                        temp = queryAccBalance(accNumber, password,atLeastOnce);
+                        temp = queryAccBalance(accNumber, password, atLeastOnce);
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
                         break;
-                    
+                    }
+                    case ADD_OBSERVERS_FOR_MONITORING_CODE: {
+                        System.out.println("Monitoring updates...");
+                        monitorDuration = readMonitorDuration();
+                        monitorUpdates(monitorDuration, atLeastOnce);
+                        System.out.println("Monitoring ended");
+                        break;
+                    }
                     case 0:
                         System.out.println("Thank you for banking with us, goodbye!");
                         end = true;
