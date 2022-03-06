@@ -1,4 +1,4 @@
-package functionalities;
+package objects;
 
 import java.net.InetAddress;
 

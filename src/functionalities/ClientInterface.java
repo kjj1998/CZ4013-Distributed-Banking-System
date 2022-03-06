@@ -96,6 +96,15 @@ public class ClientInterface {
         }
     }
 
+    /**
+     * Function to close an account
+     * @param name the name of the account holder
+     * @param password the password of the account
+     * @param accNumber the account number
+     * @param atLeastOnce whether atLeastOnce invocation semantics are used
+     * @return Account object with account details
+     * @throws Exception for unknown errors
+     */
     public static Account closeAccount(String name, String password, String accNumber,boolean atLeastOnce)throws Exception {
 
         byte[] closeAccByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_CLOSING_CODE).array();
@@ -126,6 +135,17 @@ public class ClientInterface {
                 throw new Exception();}
     }
 
+    /**
+     * Function to deposit money into the accounts
+     * @param name the name of the account holder
+     * @param accNumber the account number
+     * @param password the password of the bank account
+     * @param currency the currency of the funds being deposited
+     * @param deposit the amount of funds being deposited
+     * @param atLeastOnce whether At Least Once semantics are used
+     * @return the Account object with the updated details
+     * @throws Exception for unknown errors
+     */
     public static Account depositMoney(String name, String accNumber,String password,Currency currency, double deposit,boolean atLeastOnce) throws Exception {
         byte[] depositMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(DEPOSIT_MONEY_CODE).array();
         byte[] nameByteArray = marshall(name);
@@ -155,6 +175,18 @@ public class ClientInterface {
             default:
                 throw new Exception();}
     }
+
+    /**
+     * Function to withdraw money
+     * @param name account holder name
+     * @param accNumber account number
+     * @param password password of the account
+     * @param currency currency to withdraw the money in
+     * @param withdraw amount of money to be withdrawn
+     * @param atLeastOnce whether At Least Once Semantics is used
+     * @return Account details with all the updated details
+     * @throws Exception unknown error
+     */
     public static Account withdrawMoney(String name, String accNumber,String password,Currency currency, double withdraw,boolean atLeastOnce)throws Exception {
         byte[] withdrawMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(WITHDRAW_MONEY_CODE).array();
         byte[] nameByteArray = marshall(name);
@@ -185,6 +217,18 @@ public class ClientInterface {
                 throw new Exception();}
     }
 
+    /**
+     * Function to transfer money to another bank account
+     * @param name name of the account holder
+     * @param accNumber account number
+     * @param password password of the account
+     * @param toAccNumber account number of receiving account
+     * @param currency currency of transfer
+     * @param transfer the amount to be transferred
+     * @param atLeastOnce whether At Least Once Semantics will be used
+     * @return Account object with the account details
+     * @throws Exception unknown exception
+     */
     public static Account transferMoney(String name, String accNumber,String password,String toAccNumber,Currency currency, double transfer,boolean atLeastOnce)throws Exception {
 
         byte[] transferMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(TRANSFER_MONEY_CODE).array();
@@ -217,6 +261,12 @@ public class ClientInterface {
                 throw new Exception();}
     }
 
+    /**
+     * Function to monitor any updates on the server for a set amount time
+     * @param duration time in seconds to monitor
+     * @param atLeastOnce whether At Least Once semantic is used
+     * @throws IOException unknown error
+     */
     public static void monitorUpdates(int duration, boolean atLeastOnce) throws IOException {
         byte[] startMonitorUpdatesByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ADD_OBSERVERS_FOR_MONITORING_CODE).array();
         byte[] startMessageIDArray = convertStringToByteArray(gen.nextString());

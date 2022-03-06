@@ -1,4 +1,4 @@
-import functionalities.Observer;
+import objects.Observer;
 import objects.Account;
 import objects.LruReplyHistory;
 
@@ -102,7 +102,7 @@ public class Server {
                         break;
                     }
                     case ADD_OBSERVERS_FOR_MONITORING_CODE: {
-                        Observer o = new functionalities.Observer(clientIp, clientPort);
+                        Observer o = new Observer(clientIp, clientPort);
                         System.out.println("Adding client " + clientIdentifier + " for monitoring");
                         observerMap.put(clientIdentifier, o);
                         break;
@@ -116,7 +116,7 @@ public class Server {
 
                 if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
                     sendReply(request, reply);      // send to client the reply message
-                    for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {
+                    for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {  // notify any monitoring clients
                         entry.getValue().notify(reply);
                     }
                 }

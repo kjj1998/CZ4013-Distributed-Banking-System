@@ -53,6 +53,14 @@ public class SocketFunctions {
         return null;
     }
 
+    /**
+     * Function to send a request to the server to monitor updates
+     * @param startMarshall the bytearray to be sent over to start monitoring
+     * @param endMarshall the bytearray to be sent over to end monitoring
+     * @param atLeastOnce whether At Least Once semantics is used
+     * @param duration amount of time to monitor
+     * @throws IOException unknown exception
+     */
     public static void sendMonitorRequest(byte[] startMarshall, byte[] endMarshall, Boolean atLeastOnce, int duration) throws IOException {
         DatagramSocket aSocket = new DatagramSocket();
         InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
