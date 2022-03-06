@@ -19,7 +19,7 @@ public class SocketFunctions {
      * @param marshall the byte array to be sent over
      * @return the reply message from the server
      */
-    public static byte[] sendRequest(byte[] marshall,Boolean atLeastOnce) {
+    public static byte[] sendRequest(byte[] marshall) {
         try (DatagramSocket aSocket = new DatagramSocket()) {
             InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
 
@@ -28,23 +28,24 @@ public class SocketFunctions {
 
             byte[] buffer = new byte[BUFFER_SIZE];     // a buffer for receive
             DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+
             //If exceed timeout period, exception will be raised
-            if (atLeastOnce){
-                aSocket.setSoTimeout(atLeastOnceTimeout); //1000s set inside constants.java
-                boolean received=false;
-                while(received==false){
-                    try{
-                        aSocket.receive(reply);
-                        received=true;
-                        return reply.getData();
-                    }
-                    catch(SocketException e){
-                        System.out.println("TIMEOUT");
-                    }
+//            if (atLeastOnce){
+            aSocket.setSoTimeout(atLeastOnceTimeout); //1000s set inside constants.java
+            boolean received=false;
+            while(received==false){
+                try{
+                    aSocket.receive(reply);
+                    received=true;
+                    return reply.getData();
+                }
+                catch(SocketException e){
+                    System.out.println("TIMEOUT");
                 }
             }
-            else
-                aSocket.receive(reply);
+//            }
+//            else
+//                aSocket.receive(reply);
 
             return reply.getData();
         } catch (Exception e) {
@@ -57,11 +58,10 @@ public class SocketFunctions {
      * Function to send a request to the server to monitor updates
      * @param startMarshall the bytearray to be sent over to start monitoring
      * @param endMarshall the bytearray to be sent over to end monitoring
-     * @param atLeastOnce whether At Least Once semantics is used
      * @param duration amount of time to monitor
      * @throws IOException unknown exception
      */
-    public static void sendMonitorRequest(byte[] startMarshall, byte[] endMarshall, Boolean atLeastOnce, int duration) throws IOException {
+    public static void sendMonitorRequest(byte[] startMarshall, byte[] endMarshall, int duration) throws IOException {
         DatagramSocket aSocket = new DatagramSocket();
         InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
         DatagramPacket startRequest = new DatagramPacket(startMarshall, startMarshall.length, aHost, SERVER_PORT_NUMBER);
@@ -126,7 +126,7 @@ public class SocketFunctions {
      * @param request Original DatagramPacket from client
      * @param reply   byte array to for the reply DatagramPacket
      */
-    public static void sendReply(DatagramPacket request, byte[] reply) {
+    public static void sendReply(DatagramPacket request, byte[] reply, float failureProb) {
         try (DatagramSocket aSocket = new DatagramSocket(6789)) {
             DatagramPacket replyPacket = new DatagramPacket(reply, reply.length,
                     request.getAddress(), request.getPort());

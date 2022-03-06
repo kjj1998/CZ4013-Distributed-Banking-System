@@ -12,6 +12,7 @@ import static utils.MarshallFunctions.marshall;
 import static utils.SocketFunctions.receiveRequest;
 import static utils.SocketFunctions.sendReply;
 import static utils.UtilityFunctions.byteArrayToInt;
+import static utils.UtilityFunctions.failMessage;
 
 public class Server {
     public static Map<Integer, Account> accMapping = new HashMap<>();       // maintain a mapping of account numbers to all accounts currently on the server
@@ -25,6 +26,8 @@ public class Server {
         byte[] data;
         DatagramPacket request = null;
         String messageID;
+
+
 
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -46,7 +49,7 @@ public class Server {
                 Optional<byte[]> cachedReply = replyHistory.getReply(messageID);
 
                 int action;
-                if(cachedReply.isPresent()){
+                if(cachedReply.isPresent() && !AT_LEAST_ONCE){
                     reply = cachedReply.get();
                     action = CACHED_REPLY;
                 }else {
@@ -54,30 +57,44 @@ public class Server {
                 }
                 byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information from the client
 
+
+
                 /* switch statement to select the action to be taken by the server */
                 switch (action) {
                     case ACC_CREATION_CODE:
                         System.out.println("Creating account...");
                         reply = processAccCreation(info, accMapping);
-                        replyHistory.putReply(messageID, reply);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
                         System.out.println("Account created");
                         break;
                     case ACC_BALANCE_CODE:
                         System.out.println("Querying account balance...");
                         reply = processAccBalanceQuery(info, accMapping);
-                        replyHistory.putReply(messageID, reply);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
                         System.out.println("Account balance queried");
                         break;
                     case ACC_CLOSING_CODE:
                         System.out.println("Closing account...");
                         reply = processAccClosure(info, accMapping);
-                        replyHistory.putReply(messageID, reply);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
                         System.out.println("Account closed");
                     case DEPOSIT_MONEY_CODE:
                     {
                         System.out.println("Depositing money...");
                         reply = depositMoney(info, accMapping);
-                        replyHistory.putReply(messageID, reply);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
                         System.out.println("Money deposited");
                         break;
                     }
@@ -85,7 +102,10 @@ public class Server {
                     {
                         System.out.println("Withdrawing money...");
                         reply = withdrawMoney(info, accMapping);
-                        replyHistory.putReply(messageID, reply);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
                         System.out.println("Money withdrawn");
                         break;
                     }
@@ -93,7 +113,10 @@ public class Server {
                     {
                         System.out.println("Transferring money...");
                         reply = transferMoney(info, accMapping);
-                        replyHistory.putReply(messageID, reply);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
                         System.out.println("Money transferred");
                         break;
                     }
@@ -115,19 +138,26 @@ public class Server {
                 }
 
                 if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
-                    sendReply(request, reply);      // send to client the reply message
-                    for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {  // notify any monitoring clients
-                        entry.getValue().notify(reply);
+
+                    //Simulate server reply failure
+                    //NOT SURE WHICH MESSAGES SHOULD FAIL WHEN SIMULATING PACKET LOSS. FOR NOW I ASSUME ALL MESSAGES HERE FAIL TO SEND
+                    if(!failMessage("server")) {
+                        sendReply(request, reply, SERVER_FAILURE_PROB);      // send to client the reply message
+                        for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {  // notify any monitoring clients
+                            entry.getValue().notify(reply);
+                        }
+                    }else{
+                        System.out.println("Message was not sent to simulate packet loss.");
                     }
                 }
             } catch (IllegalArgumentException validationError) {
                 if (Objects.equals(validationError.getMessage(), NOT_FOUND)) {
                     assert request != null;
-                    sendReply(request, marshall(NOT_FOUND));
+                    sendReply(request, marshall(NOT_FOUND), SERVER_FAILURE_PROB);
                     System.out.println("Error: Account Number not found");
                 } else if (Objects.equals(validationError.getMessage(), UNAUTHORIZED)) {
                     assert request != null;
-                    sendReply(request, marshall(UNAUTHORIZED));
+                    sendReply(request, marshall(UNAUTHORIZED), SERVER_FAILURE_PROB);
                     System.out.println("Error: Wrong name/password entered.");
                 }
             } finally {

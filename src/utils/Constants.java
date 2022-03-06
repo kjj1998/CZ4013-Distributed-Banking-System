@@ -7,7 +7,10 @@ public class Constants {
     public static final int BUFFER_SIZE = 1000;
     public static final int LRU_CACHE_SIZE = 100;
 
+    public static final boolean AT_LEAST_ONCE = false; //if at least once is false, use at most once
     public static final int atLeastOnceTimeout = 1000;
+    public static final float SERVER_FAILURE_PROB = 0;
+    public static final float CLIENT_FAILURE_PROB = 0;
 
     public static final int MESSAGE_ID_LENGTH = 16;             // number of alphanumeric characters in each message id
     public static final int BYTE_BLOCK_SIZE = 4;                // number of bytes in each block of bytes

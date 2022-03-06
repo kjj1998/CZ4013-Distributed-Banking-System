@@ -1,10 +1,13 @@
 import objects.Account;
 import objects.Currency;
+
 import java.util.Objects;
+import java.util.Random;
 import java.util.Scanner;
 
 import static functionalities.ClientInterface.*;
-import static utils.ClientMessage.*;
+import static utils.ClientMessage.DisplayAccountDetails;
+import static utils.ClientMessage.DisplayBalance;
 import static utils.Constants.*;
 import static utils.ReadingInputs.*;
 
@@ -26,7 +29,7 @@ public class Client {
                 System.out.printf("%s\n", "1. Open a new account");
                 System.out.printf("%s\n", "2. Deposit money");
                 System.out.printf("%s\n", "3. Withdraw money");
-                System.out.printf("%s\n", "4. Close an existing account");
+                 System.out.printf("%s\n", "4. Close an existing account");
                 System.out.printf("%s\n", "5. Transfer money");
                 System.out.printf("%s\n", "6. Monitor updates");
                 System.out.printf("%s\n", "8. Show current account initialBalance");
@@ -43,7 +46,7 @@ public class Client {
                         currency = readCurrencyInput();
                         password = readPassword(NEW);
                         initialBalance = readMoney(NEW);
-                        temp = createAccount(name, currency, password, initialBalance,atLeastOnce);
+                        temp = createAccount(name, currency, password, initialBalance);
 
                         System.out.println("Account created with the following details");
                         System.out.println("------------------------------------------");
@@ -59,7 +62,7 @@ public class Client {
                         currency = readCurrencyInput();
                         deposit = readDeposit();
 
-                        temp = depositMoney(name,accNumber,password,currency,deposit,atLeastOnce);
+                        temp = depositMoney(name, accNumber, password, currency, deposit);
                         assert temp != null : "Account object is null";
                         System.out.println("Deposit done!");
                         DisplayBalance(temp.getAccBalance());
@@ -73,7 +76,7 @@ public class Client {
                         currency = readCurrencyInput();
                         withdraw = readWithdraw();
 
-                        temp = withdrawMoney(name,accNumber,password,currency,withdraw,atLeastOnce);
+                        temp = withdrawMoney(name,accNumber,password,currency,withdraw);
                         assert temp != null : "Account object is null";
                         System.out.println("Withdraw done!");
                         DisplayBalance(temp.getAccBalance());
@@ -85,7 +88,7 @@ public class Client {
                         accNumber = readAccountNumber();
                         name = readNameInput();
                         password = readPassword(EXISTING);
-                        temp = closeAccount(name, password, accNumber,atLeastOnce);
+                        temp = closeAccount(name, password, accNumber);
 
                         System.out.println("The following account is closed");
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
@@ -99,7 +102,7 @@ public class Client {
                         currency = readCurrencyInput();
                         transfer=readTransfer();
 
-                        temp = transferMoney(name,accNumber,password, toAccNumber, currency,transfer,atLeastOnce);
+                        temp = transferMoney(name,accNumber,password, toAccNumber, currency,transfer);
                         assert temp != null : "Account object is null";
                         System.out.println("Transfer done!");
                         DisplayBalance(temp.getAccBalance());
@@ -110,14 +113,14 @@ public class Client {
                         accNumber = readAccountNumber();
                         password = readPassword(EXISTING);
 
-                        temp = queryAccBalance(accNumber, password, atLeastOnce);
+                        temp = queryAccBalance(accNumber, password);
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
                         break;
                     }
                     case ADD_OBSERVERS_FOR_MONITORING_CODE: {
                         System.out.println("Monitoring updates...");
                         monitorDuration = readMonitorDuration();
-                        monitorUpdates(monitorDuration, atLeastOnce);
+                        monitorUpdates(monitorDuration);
                         System.out.println("Monitoring ended");
                         break;
                     }
