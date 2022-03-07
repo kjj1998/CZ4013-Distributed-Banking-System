@@ -67,4 +67,9 @@ public class Constants {
     public static final String DepositFunds = "Deposit of Funds";
     public static final String TransferFundsIn = "Transfer of Funds In";
     public static final String TransferFundsOut = "Transfer of Funds Out";
+
+    /* EXCHANGE RATE, taking SGD as 1.0 */
+    public static final double sgdExchangeRate = 1.00;
+    public static final double nzdExchangeRate = 1.07;
+    public static final double usdExchangeRate = 0.73;
 }
