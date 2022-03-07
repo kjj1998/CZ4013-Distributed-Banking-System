@@ -131,7 +131,7 @@ public class ServerInterface {
         Account queriedAccount = accMapping.get(accNumber);
 
         if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
-            queriedAccount.deposit(deposit);
+            queriedAccount.deposit(deposit,currency);
 
             return marshallAccount(queriedAccount);
         } else {
@@ -152,7 +152,7 @@ public class ServerInterface {
         Account queriedAccount = accMapping.get(accNumber);
 
         if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
-            queriedAccount.withdraw(withdraw);
+            queriedAccount.withdraw(withdraw,currency);
             queriedAccount.setAction(WithdrawFunds);
             return marshallAccount(queriedAccount);
         } else {
@@ -174,7 +174,7 @@ public class ServerInterface {
             throw new IllegalArgumentException(NOT_FOUND);
         Account queriedAccount = accMapping.get(accNumber);
         if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
-            queriedAccount.withdraw(transfer);
+            queriedAccount.withdraw(transfer,currency);
             queriedAccount.setAction(TransferFundsOut);
         } else {
             throw new IllegalArgumentException(UNAUTHORIZED);
@@ -182,12 +182,12 @@ public class ServerInterface {
 
         //Recipient acc
         if (!accMapping.containsKey(toAccNumber)) {
-            queriedAccount.deposit(transfer);
+            queriedAccount.deposit(transfer,currency);
             throw new IllegalArgumentException(NOT_FOUND);
         }
 
         Account recipientAccount = accMapping.get(toAccNumber);
-        recipientAccount.deposit(transfer);
+        recipientAccount.deposit(transfer,currency);
         recipientAccount.setAction(TransferFundsIn);
 
         return marshallAccount(queriedAccount);
