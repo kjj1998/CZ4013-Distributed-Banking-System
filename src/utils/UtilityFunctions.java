@@ -4,11 +4,13 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.util.Random;
 
-import static utils.Constants.ASCII_CODE_FOR_PADDING;
-import static utils.Constants.BYTE_BLOCK_SIZE;
+import static utils.Constants.*;
 
 public class UtilityFunctions {
+    private static Random msgFailSim = new Random();
+
     /**
      * Convert a String into a byte array whose size is a multiple of 4
      * If length of String is not a multiple of 4, '_' (ASCII code 95) is added as padding to make up the numbers
@@ -86,6 +88,23 @@ public class UtilityFunctions {
         BigDecimal bd = BigDecimal.valueOf(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+
+    public static boolean failMessage(String side){
+        float failProb = 0f + msgFailSim.nextFloat() * (1f - 0f);
+
+
+        if(side.equals("client")){
+            if(failProb <= CLIENT_FAILURE_PROB){
+                return true;
+            }
+        }else{
+            if(failProb <= SERVER_FAILURE_PROB){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

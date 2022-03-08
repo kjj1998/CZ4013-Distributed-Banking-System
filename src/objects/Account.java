@@ -1,7 +1,10 @@
 package objects;
+import java.text.DecimalFormat;
 
 import java.util.Objects;
-
+import static utils.Constants.sgdExchangeRate;
+import static utils.Constants.nzdExchangeRate;
+import static utils.Constants.usdExchangeRate;
 import static utils.Constants.INSUFFICIENT;
 
 public class Account {
@@ -57,13 +60,24 @@ public class Account {
         return cur;
     }
 
-    public void withdraw(double amt) {
+    public void withdraw(double amt,String currency) {
+        double accCurrencyRate=getCurrencyRate(cur.toString());
+        double depositCurrencyRate=getCurrencyRate(currency);
+
+        amt=(amt/depositCurrencyRate)*accCurrencyRate;
+        amt=Math.round(amt*100.0)/100.0;
+
         if (accBalance < amt)
             throw new IllegalArgumentException(INSUFFICIENT);
         this.accBalance -= amt;
     }
 
-    public void deposit(double amt) {
+    public void deposit(double amt,String currency) {
+        double accCurrencyRate=getCurrencyRate(cur.toString());
+        double depositCurrencyRate=getCurrencyRate(currency);
+
+        amt=(amt/depositCurrencyRate)*accCurrencyRate;
+        amt=Math.round(amt*100.0)/100.0;
         this.accBalance += amt;
     }
 
@@ -77,4 +91,15 @@ public class Account {
     public double getAccBalance() {
         return this.accBalance;
     }
+
+    public double getCurrencyRate(String cur){
+        if (cur.equals("SGD"))
+            return sgdExchangeRate;
+        if (cur.equals("NZD"))
+            return nzdExchangeRate;
+        if (cur.equals("USD"))
+            return usdExchangeRate;
+        return 0.00;
+    }
+    
 }
