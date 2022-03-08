@@ -65,6 +65,7 @@ public class Account {
         double depositCurrencyRate=getCurrencyRate(currency);
 
         amt=(amt/depositCurrencyRate)*accCurrencyRate;
+        amt=Math.round(amt*100.0)/100.0;
 
         if (accBalance < amt)
             throw new IllegalArgumentException(INSUFFICIENT);
@@ -76,6 +77,7 @@ public class Account {
         double depositCurrencyRate=getCurrencyRate(currency);
 
         amt=(amt/depositCurrencyRate)*accCurrencyRate;
+        amt=Math.round(amt*100.0)/100.0;
         this.accBalance += amt;
     }
 
