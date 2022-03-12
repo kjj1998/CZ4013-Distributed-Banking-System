@@ -32,7 +32,7 @@ public class SocketFunctions {
             //If exceed timeout period, exception will be raised
 //            if (atLeastOnce){
             aSocket.setSoTimeout(atLeastOnceTimeout); //1000s set inside constants.java
-            boolean received=false;
+            /*boolean received=false;
             while(received==false){
                 try{
                     aSocket.receive(reply);
@@ -42,13 +42,17 @@ public class SocketFunctions {
                 catch(SocketException e){
                     System.out.println("TIMEOUT");
                 }
-            }
+            }*/
 //            }
 //            else
 //                aSocket.receive(reply);
-
+            aSocket.receive(reply);
             return reply.getData();
-        } catch (Exception e) {
+        }
+        catch(SocketTimeoutException e) {
+            return null;
+        }
+        catch (Exception e) {
             System.out.println();
         }
         return null;
@@ -127,7 +131,7 @@ public class SocketFunctions {
      * @param reply   byte array to for the reply DatagramPacket
      */
     public static void sendReply(DatagramPacket request, byte[] reply, float failureProb) {
-        try (DatagramSocket aSocket = new DatagramSocket(6789)) {
+        try (DatagramSocket aSocket = new DatagramSocket(SERVER_PORT_NUMBER)) {
             DatagramPacket replyPacket = new DatagramPacket(reply, reply.length,
                     request.getAddress(), request.getPort());
             aSocket.send(replyPacket);
@@ -137,7 +141,7 @@ public class SocketFunctions {
     }
 
     public static void sendMonitorReply(byte[] reply, InetAddress ip, int port) {
-        try (DatagramSocket aSocket = new DatagramSocket(6789)) {
+        try (DatagramSocket aSocket = new DatagramSocket(SERVER_PORT_NUMBER)) {
             DatagramPacket replyPacket = new DatagramPacket(reply, reply.length,
                     ip, port);
             aSocket.send(replyPacket);

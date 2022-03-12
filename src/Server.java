@@ -16,8 +16,8 @@ import static utils.UtilityFunctions.failMessage;
 
 public class Server {
     public static Map<Integer, Account> accMapping = new HashMap<>();       // maintain a mapping of account numbers to all accounts currently on the server
-    private static final LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);
-    private static final Map<String, Observer> observerMap = new HashMap<>();
+    private static final LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);      // maintain a history of replies base on the least recently used scheme
+    private static final Map<String, Observer> observerMap = new HashMap<>();       // maintain a mapping of clients who are currently monitoring the server for updates
 
     public static void main(String[] args) {
         System.out.println("Server started on port " + SERVER_PORT_NUMBER);
@@ -25,9 +25,9 @@ public class Server {
         byte[] reply = new byte[BUFFER_SIZE];
         byte[] data;
         DatagramPacket request = null;
-        String messageID;
-
-
+        InetAddress clientIp;
+        int clientPort;
+        String messageID, clientIdentifier;
 
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -35,10 +35,9 @@ public class Server {
                 request = receiveRequest(buffer);                                                   // listen for requests from clients
                 assert request != null : "Data from client is null";
                 data = request.getData();                                                           // get the data from the request DatagramPacket
-
-                InetAddress clientIp = request.getAddress();
-                int clientPort = request.getPort();
-                String clientIdentifier = clientPort + clientIp.toString();
+                clientIp = request.getAddress();                                                    // get the client ip address
+                clientPort = request.getPort();                                                     // get the client port number
+                clientIdentifier = clientPort + clientIp.toString();                                // construct the client identifier
                 messageID = new String(Arrays.copyOfRange(data, 0, MESSAGE_ID_LENGTH));             // retrieve the unique message id
                 System.out.printf("\nmessageID: %s\n", messageID);
 
@@ -58,35 +57,39 @@ public class Server {
                 byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information from the client
 
 
-
                 /* switch statement to select the action to be taken by the server */
                 switch (action) {
-                    case ACC_CREATION_CODE:
+                    case ACC_CREATION_CODE: {
                         System.out.println("Creating account...");
                         reply = processAccCreation(info, accMapping);
 
-                        if(!AT_LEAST_ONCE)
+                        if (!AT_LEAST_ONCE)
                             replyHistory.putReply(messageID, reply);
 
                         System.out.println("Account created");
                         break;
-                    case ACC_BALANCE_CODE:
+                    }
+                    case ACC_BALANCE_CODE: {
                         System.out.println("Querying account balance...");
                         reply = processAccBalanceQuery(info, accMapping);
 
-                        if(!AT_LEAST_ONCE)
+                        if (!AT_LEAST_ONCE)
                             replyHistory.putReply(messageID, reply);
 
                         System.out.println("Account balance queried");
                         break;
-                    case ACC_CLOSING_CODE:
+                    }
+                    case ACC_CLOSING_CODE: {
                         System.out.println("Closing account...");
                         reply = processAccClosure(info, accMapping);
 
-                        if(!AT_LEAST_ONCE)
+                        if (!AT_LEAST_ONCE)
                             replyHistory.putReply(messageID, reply);
 
                         System.out.println("Account closed");
+
+                        break;
+                    }
                     case DEPOSIT_MONEY_CODE:
                     {
                         System.out.println("Depositing money...");

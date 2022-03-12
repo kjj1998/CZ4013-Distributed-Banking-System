@@ -9,7 +9,7 @@ import java.util.Random;
 import static utils.Constants.*;
 
 public class UtilityFunctions {
-    private static Random msgFailSim = new Random();
+    private static final Random msgFailSim = new Random();
 
     /**
      * Convert a String into a byte array whose size is a multiple of 4
@@ -91,20 +91,13 @@ public class UtilityFunctions {
     }
 
     public static boolean failMessage(String side){
-        float failProb = 0f + msgFailSim.nextFloat() * (1f - 0f);
-
+        float failProb = 0f + msgFailSim.nextFloat();
 
         if(side.equals("client")){
-            if(failProb <= CLIENT_FAILURE_PROB){
-                return true;
-            }
+            return failProb <= CLIENT_FAILURE_PROB;
         }else{
-            if(failProb <= SERVER_FAILURE_PROB){
-                return true;
-            }
+            return failProb <= SERVER_FAILURE_PROB;
         }
-
-        return false;
     }
 }
 

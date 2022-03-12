@@ -2,7 +2,6 @@ import objects.Account;
 import objects.Currency;
 
 import java.util.Objects;
-import java.util.Random;
 import java.util.Scanner;
 
 import static functionalities.ClientInterface.*;
@@ -17,10 +16,10 @@ public class Client {
         String name, password, initialBalance, accNumber,toAccNumber;
         Currency currency;
         Account temp;
-        Double deposit, withdraw, transfer;
+        double deposit, withdraw, transfer;
         int monitorDuration;
         //If atLeastOnce schematic is used, set atLeaseOnce as true
-        boolean atLeastOnce=true;
+        boolean atLeastOnce = true;
 
         System.out.printf("%20s\n","Welcome to CZ4013 Bank!");
         while (!end) {
@@ -50,7 +49,6 @@ public class Client {
 
                         System.out.println("Account created with the following details");
                         System.out.println("------------------------------------------");
-                        assert temp != null : "Account object is null";
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
                         break;
                     }
@@ -82,7 +80,7 @@ public class Client {
                         DisplayBalance(temp.getAccBalance());
                         break;
                     }
-                    case ACC_CLOSING_CODE:
+                    case ACC_CLOSING_CODE: {
                         System.out.println("Closing account...");
 
                         accNumber = readAccountNumber();
@@ -92,7 +90,8 @@ public class Client {
 
                         System.out.println("The following account is closed");
                         DisplayAccountDetails(temp.getAccNumber(), temp.getName(), temp.getCurrency(), temp.getAccBalance());
-
+                        break;
+                    }
                     case TRANSFER_MONEY_CODE:{
                         System.out.println("Transferring money...");
                         name = readNameInput();
@@ -124,13 +123,15 @@ public class Client {
                         System.out.println("Monitoring ended");
                         break;
                     }
-                    case 0:
+                    case 0: {
                         System.out.println("Thank you for banking with us, goodbye!");
                         end = true;
                         break;
-                    default:
+                    }
+                    default: {
                         System.out.printf("%s\n", "Unavailable choice entered");
                         break;
+                    }
                 }
             } catch (NumberFormatException invalidFormat) {
                 System.out.println("Error: Invalid input entered");

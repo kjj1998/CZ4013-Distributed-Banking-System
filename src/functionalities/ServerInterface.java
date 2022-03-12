@@ -56,7 +56,7 @@ public class ServerInterface {
         Account newAccount = new Account(name, Currency.valueOf(currency), password, amt, accNumber, AccountCreation);
 
         if (accMapping.containsKey(accNumber)) {
-            accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate another account number if not unique
+            accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate another account number if not unique (not likely to happen in our use case)
         }
         accMapping.put(accNumber, newAccount);     // create account and add it into the account mapping
 

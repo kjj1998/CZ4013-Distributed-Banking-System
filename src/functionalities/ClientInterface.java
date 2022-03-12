@@ -105,7 +105,6 @@ public class ClientInterface {
      * @throws Exception for unknown errors
      */
     public static Account closeAccount(String name, String password, String accNumber)throws Exception {
-
         byte[] closeAccByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ACC_CLOSING_CODE).array();
         byte[] nameByteArray = marshall(name);
         byte[] passwordByteArray = marshall(password);
@@ -113,12 +112,12 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, closeAccByteArray, accNumberByteArray, nameByteArray, passwordByteArray);
 
-        byte[] reply = null;
-//        byte[] reply = sendRequest(marshall);
+        //byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
-            reply=sendRequest(marshall);
             System.out.println("Resending Message");
+            reply=sendRequest(marshall);
         }
 //        }
 
@@ -233,7 +232,6 @@ public class ClientInterface {
      * @throws Exception unknown exception
      */
     public static Account transferMoney(String name, String accNumber,String password,String toAccNumber,Currency currency, double transfer)throws Exception {
-
         byte[] transferMoneyByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(TRANSFER_MONEY_CODE).array();
         byte[] nameByteArray = marshall(name);
         byte[] accNumberByteArray = marshall(accNumber);
