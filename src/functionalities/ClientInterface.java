@@ -6,12 +6,12 @@ import objects.Pointer;
 import utils.MessageIDGenerator;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 
 import static utils.Constants.*;
 import static utils.MarshallFunctions.*;
-import static utils.SocketFunctions.sendMonitorRequest;
-import static utils.SocketFunctions.sendRequest;
+import static utils.SocketFunctions.*;
 import static utils.UtilityFunctions.*;
 
 
@@ -154,8 +154,8 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, depositMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,depositByteArray);
 
-//        byte[] reply = sendRequest(marshall);
-        byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
+        // byte[] reply = null;
 
 //        System.out.println("Sent the request to deposit once. Trying again to see if At most once works");
 //        reply = sendRequest(marshall,atLeastOnce);
@@ -199,8 +199,8 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, withdrawMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,withdrawByteArray);
 
-        byte[] reply = null;
-//        byte[] reply = sendRequest(marshall);
+        // byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
@@ -242,8 +242,8 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, transferMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,toAccNumberByteArray,currencyByteArray,transferByteArray);
 
-        byte[] reply = null;
-//        byte[] reply = sendRequest(marshall);
+//        byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
@@ -268,16 +268,37 @@ public class ClientInterface {
      * @param duration time in seconds to monitor
      * @throws IOException unknown error
      */
-    public static void monitorUpdates(int duration) throws IOException {
+    public static void monitorUpdates(int duration) throws Exception {
+        /* Set up the byte array containing instructions for current client to monitor server */
         byte[] startMonitorUpdatesByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(ADD_OBSERVERS_FOR_MONITORING_CODE).array();
         byte[] startMessageIDArray = convertStringToByteArray(gen.nextString());
         byte[] startMonitoringMarshall = concatWithCopy(startMessageIDArray, startMonitorUpdatesByteArray);
 
+        /* Set up the byte array containing instructions for current client to end monitoring of server */
         byte[] endMonitorUpdatesByteArray = ByteBuffer.allocate(BYTE_BLOCK_SIZE_FOR_INT).putInt(REMOVE_OBSERVERS_FROM_MONITORING_CODE).array();
         byte[] endMessageIDArray = convertStringToByteArray(gen.nextString());
         byte[] endMonitoringMarshall = concatWithCopy(endMessageIDArray, endMonitorUpdatesByteArray);
 
-        sendMonitorRequest(startMonitoringMarshall, endMonitoringMarshall, duration);
-        System.out.println("Monitoring ended");
+        DatagramSocket aSocket = new DatagramSocket();
+        byte[] reply = sendRequestForMonitoring(startMonitoringMarshall, aSocket);
+        while(reply==null || failMessage("client")){
+            reply=sendRequestForMonitoring(startMonitoringMarshall, aSocket);
+            System.out.println("Resending Message");
+        }
+
+        Pointer pointer = new Pointer(0);
+        String statusCode = unmarshall(pointer, reply);
+        if (!statusCode.equals(OK)) {
+            throw new Exception();
+        }
+
+        monitorServer(duration, aSocket);
+
+        reply = sendRequestForMonitoring(endMonitoringMarshall, aSocket);
+        while(reply==null || failMessage("client")){
+            reply=sendRequestForMonitoring(startMonitoringMarshall, aSocket);
+            System.out.println("Resending Message");
+        }
+        aSocket.close();
     }
 }

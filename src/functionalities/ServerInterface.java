@@ -2,13 +2,14 @@ package functionalities;
 
 import objects.Account;
 import objects.Currency;
+import objects.Observer;
 import objects.Pointer;
 
 import java.util.Map;
 
 import static utils.Constants.*;
-import static utils.UtilityFunctions.*;
 import static utils.MarshallFunctions.*;
+import static utils.UtilityFunctions.round;
 
 public class ServerInterface {
     /**
@@ -117,7 +118,7 @@ public class ServerInterface {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
-    public static <K,V> byte[] depositMoney(byte[] request, Map<Integer, Account> accMapping){
+    public static byte[] depositMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
@@ -138,7 +139,7 @@ public class ServerInterface {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
-    public static <K,V> byte[] withdrawMoney(byte[] request, Map<Integer, Account> accMapping){
+    public static byte[] withdrawMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
@@ -160,7 +161,7 @@ public class ServerInterface {
         }
     }
 
-    public static <K,V> byte[] transferMoney(byte[] request, Map<Integer, Account> accMapping){
+    public static byte[] transferMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
@@ -191,5 +192,15 @@ public class ServerInterface {
         recipientAccount.setAction(TransferFundsIn);
 
         return marshallAccount(queriedAccount);
+    }
+
+    public static byte[] addObserver(String clientIdentifier, Observer o, Map<String, Observer> observerMap) {
+        observerMap.put(clientIdentifier, o);
+        return marshall(OK);
+    }
+
+    public static byte[] removeObserver(String clientIdentifier, Map<String, Observer> observerMap) {
+        observerMap.remove(clientIdentifier);
+        return marshall(OK);
     }
 }

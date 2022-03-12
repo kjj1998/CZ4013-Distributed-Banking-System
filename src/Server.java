@@ -14,10 +14,10 @@ import static utils.SocketFunctions.sendReply;
 import static utils.UtilityFunctions.byteArrayToInt;
 import static utils.UtilityFunctions.failMessage;
 
-public class Server {
+public class Server <K, V> {
     public static Map<Integer, Account> accMapping = new HashMap<>();       // maintain a mapping of account numbers to all accounts currently on the server
     private static final LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);      // maintain a history of replies base on the least recently used scheme
-    private static final Map<String, Observer> observerMap = new HashMap<>();       // maintain a mapping of clients who are currently monitoring the server for updates
+    private static final Map<String, Observer> observerMap = new HashMap<String, Observer>();       // maintain a mapping of clients who are currently monitoring the server for updates
 
     public static void main(String[] args) {
         System.out.println("Server started on port " + SERVER_PORT_NUMBER);
@@ -128,31 +128,43 @@ public class Server {
                         break;
                     }
                     case ADD_OBSERVERS_FOR_MONITORING_CODE: {
+                        System.out.println("Adding client " + clientIdentifier + " for monitoring...");
                         Observer o = new Observer(clientIp, clientPort);
-                        System.out.println("Adding client " + clientIdentifier + " for monitoring");
-                        observerMap.put(clientIdentifier, o);
+                        reply = addObserver(clientIdentifier, o, observerMap);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
+                        System.out.println("Client " + clientIdentifier + " is now monitoring server...");
                         break;
                     }
                     case REMOVE_OBSERVERS_FROM_MONITORING_CODE: {
-                        observerMap.remove(clientIdentifier);
                         System.out.println("Removing client " + clientIdentifier + " from monitoring");
+                        reply = removeObserver(clientIdentifier, observerMap);
+
+                        if(!AT_LEAST_ONCE)
+                            replyHistory.putReply(messageID, reply);
+
+                        System.out.println("Client " + clientIdentifier + " is now removed from monitoring server...");
                         break;
                     }
                 }
 
-                if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
+                //if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
 
-                    //Simulate server reply failure
-                    //NOT SURE WHICH MESSAGES SHOULD FAIL WHEN SIMULATING PACKET LOSS. FOR NOW I ASSUME ALL MESSAGES HERE FAIL TO SEND
-                    if(!failMessage("server")) {
-                        sendReply(request, reply, SERVER_FAILURE_PROB);      // send to client the reply message
+                //Simulate server reply failure
+                //We assume all messages fail to send when simulating packet loss
+                if(!failMessage("server")) {
+                    sendReply(request, reply, SERVER_FAILURE_PROB);      // send to client the reply message
+                    if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
                         for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {  // notify any monitoring clients
                             entry.getValue().notify(reply);
                         }
-                    }else{
-                        System.out.println("Message was not sent to simulate packet loss.");
                     }
+                }else{
+                    System.out.println("Message was not sent to simulate packet loss.");
                 }
+                //}
             } catch (IllegalArgumentException validationError) {
                 if (Objects.equals(validationError.getMessage(), NOT_FOUND)) {
                     assert request != null;
@@ -163,7 +175,11 @@ public class Server {
                     sendReply(request, marshall(UNAUTHORIZED), SERVER_FAILURE_PROB);
                     System.out.println("Error: Wrong name/password entered.");
                 }
-            } finally {
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
                 reply = new byte[BUFFER_SIZE];         // reset buffers
                 buffer = new byte[BUFFER_SIZE];
             }

@@ -58,13 +58,46 @@ public class SocketFunctions {
         return null;
     }
 
-    /**
-     * Function to send a request to the server to monitor updates
-     * @param startMarshall the bytearray to be sent over to start monitoring
-     * @param endMarshall the bytearray to be sent over to end monitoring
-     * @param duration amount of time to monitor
-     * @throws IOException unknown exception
-     */
+    public static byte[] sendRequestForMonitoring(byte[] marshall, DatagramSocket aSocket) {
+        try {
+            InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
+
+            DatagramPacket request = new DatagramPacket(marshall, marshall.length, aHost, SERVER_PORT_NUMBER);
+            aSocket.send(request);
+
+            byte[] buffer = new byte[BUFFER_SIZE];     // a buffer for receive
+            DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+
+            //If exceed timeout period, exception will be raised
+//            if (atLeastOnce){
+            aSocket.setSoTimeout(atLeastOnceTimeout); //1000s set inside constants.java
+            /*boolean received=false;
+            while(received==false){
+                try{
+                    aSocket.receive(reply);
+                    received=true;
+                    return reply.getData();
+                }
+                catch(SocketException e){
+                    System.out.println("TIMEOUT");
+                }
+            }*/
+//            }
+//            else
+//                aSocket.receive(reply);
+            aSocket.receive(reply);
+            return reply.getData();
+        }
+        catch(SocketTimeoutException e) {
+            return null;
+        }
+        catch (Exception e) {
+            System.out.println();
+        }
+        return null;
+    }
+
+    /*
     public static void sendMonitorRequest(byte[] startMarshall, byte[] endMarshall, int duration) throws IOException {
         DatagramSocket aSocket = new DatagramSocket();
         InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
@@ -105,6 +138,42 @@ public class SocketFunctions {
 
         DatagramPacket endRequest = new DatagramPacket(endMarshall, endMarshall.length, aHost, SERVER_PORT_NUMBER);
         aSocket.send(endRequest);
+    }
+    */
+
+    public static void monitorServer(int duration, DatagramSocket aSocket) throws IOException {
+        InetAddress aHost = InetAddress.getByName(HOST_NAME);     // translate user-specified hostname to Internet address
+        //DatagramSocket aSocket = new DatagramSocket();
+        LocalDateTime endTime = LocalDateTime.now().plusSeconds(duration);
+        while (LocalDateTime.now().isBefore(endTime)) {
+            try {
+                byte[] buffer = new byte[BUFFER_SIZE];     // a buffer for receive
+                DatagramPacket update = new DatagramPacket(buffer, buffer.length);
+                aSocket.setSoTimeout(1);
+                aSocket.receive(update);
+
+                Pointer pointer = new Pointer(0);
+                String statusCode = unmarshall(pointer, update.getData());
+                switch (statusCode) {
+                    case OK: {
+                        Account acc = unmarshallAccount(pointer, update.getData());
+                        DisplayAccountDetailsMonitoring(acc.getAccNumber(), acc.getName(), acc.getCurrency(), acc.getAccBalance(), acc.getAction());
+                        System.out.println("Monitoring updates...");
+                        break;
+                    }
+                    case NOT_FOUND:
+                        throw new IllegalArgumentException(NOT_FOUND);
+                    case UNAUTHORIZED:
+                        throw new IllegalArgumentException(UNAUTHORIZED);
+                    default:
+                        throw new Exception();
+                }
+            } catch (SocketTimeoutException ignored) {
+                ;
+            } catch (Exception e) {
+                throw new IOException();
+            }
+        }
     }
 
     /**

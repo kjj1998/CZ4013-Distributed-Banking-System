@@ -15,6 +15,8 @@ public class Observer {
     }
 
     public void notify(byte[] reply) {
+        System.out.println(ip);
+        System.out.println(port);
         sendMonitorReply(reply, ip, port);
     }
 }
