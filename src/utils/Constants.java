@@ -2,7 +2,7 @@ package utils;
 
 public class Constants {
     /* Configurations */
-    public static final String HOST_NAME = "10.27.51.79";
+    public static final String HOST_NAME = "10.27.51.79"; // IP address to be changed based on which PC is acting as the server
     public static final int SERVER_PORT_NUMBER = 6789;
     public static final int BUFFER_SIZE = 1000;
     public static final int LRU_CACHE_SIZE = 100;
