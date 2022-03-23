@@ -140,7 +140,11 @@ public class Client {
                     System.out.println("Error: Account Number not found");
                 } else if (Objects.equals(serverError.getMessage(), UNAUTHORIZED)) {
                     System.out.println("Error: Wrong name/password entered");
+<<<<<<< HEAD
                 } else if (Objects.equals(serverError.getMessage(), INSUFFICIENT)) {
+=======
+                } else if (Objects.equals(serverError.getMessage(), INSUFFICIENT)){
+>>>>>>> c6b626538d90a8947b73020b47db9fc026cd077b
                     System.out.println("Error: Insufficient amount in account");
                 }
             }

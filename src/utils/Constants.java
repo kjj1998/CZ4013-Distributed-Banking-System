@@ -2,14 +2,14 @@ package utils;
 
 public class Constants {
     /* Configurations */
-    public static final String HOST_NAME = "localhost";
+    public static final String HOST_NAME = "10.27.51.79";
     public static final int SERVER_PORT_NUMBER = 6789;
     public static final int BUFFER_SIZE = 1000;
     public static final int LRU_CACHE_SIZE = 100;
 
     public static final boolean AT_LEAST_ONCE = true; //if at least once is false, use at most once
-    public static final int atLeastOnceTimeout = 1000;
-    public static final float SERVER_FAILURE_PROB = 0.9f;
+    public static final int atLeastOnceTimeout = 2000;
+    public static final float SERVER_FAILURE_PROB = 0;
     public static final float CLIENT_FAILURE_PROB = 0;
 
     public static final int MESSAGE_ID_LENGTH = 16;             // number of alphanumeric characters in each message id
