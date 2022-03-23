@@ -133,31 +133,35 @@ public class ServerInterface {
 
         if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
             queriedAccount.deposit(deposit,currency);
-
+            queriedAccount.setAction(DepositFunds);
             return marshallAccount(queriedAccount);
         } else {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
     public static byte[] withdrawMoney(byte[] request, Map<Integer, Account> accMapping){
-        Pointer val = new Pointer(0);
+        try {
+            Pointer val = new Pointer(0);
 
-        String name = unmarshall(val, request);
-        int accNumber = Integer.parseInt(unmarshall(val, request));
-        String password = unmarshall(val, request);
-        String currency = unmarshall(val, request);
-        double withdraw = round(Double.parseDouble(unmarshall(val, request)), 2);
+            String name = unmarshall(val, request);
+            int accNumber = Integer.parseInt(unmarshall(val, request));
+            String password = unmarshall(val, request);
+            String currency = unmarshall(val, request);
+            double withdraw = round(Double.parseDouble(unmarshall(val, request)), 2);
 
-        if (!accMapping.containsKey(accNumber))
-            throw new IllegalArgumentException(NOT_FOUND);
-        Account queriedAccount = accMapping.get(accNumber);
+            if (!accMapping.containsKey(accNumber))
+                throw new IllegalArgumentException(NOT_FOUND);
+            Account queriedAccount = accMapping.get(accNumber);
 
-        if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
-            queriedAccount.withdraw(withdraw,currency);
-            queriedAccount.setAction(WithdrawFunds);
-            return marshallAccount(queriedAccount);
-        } else {
-            throw new IllegalArgumentException(UNAUTHORIZED);
+            if (queriedAccount.verifyName(name) && queriedAccount.verifyPassword(password)) {
+                queriedAccount.withdraw(withdraw, currency);
+                queriedAccount.setAction(WithdrawFunds);
+                return marshallAccount(queriedAccount);
+            } else {
+                throw new IllegalArgumentException(UNAUTHORIZED);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 

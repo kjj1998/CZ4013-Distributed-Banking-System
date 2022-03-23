@@ -174,6 +174,10 @@ public class Server <K, V> {
                     assert request != null;
                     sendReply(request, marshall(UNAUTHORIZED), SERVER_FAILURE_PROB);
                     System.out.println("Error: Wrong name/password entered.");
+                } else if (Objects.equals(validationError.getMessage(), INSUFFICIENT)) {
+                    assert request != null;
+                    sendReply(request, marshall(INSUFFICIENT), SERVER_FAILURE_PROB);
+                    System.out.println("Error: Insufficient amount in account.");
                 }
 
             } catch (Exception e) {

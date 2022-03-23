@@ -94,8 +94,10 @@ public class UtilityFunctions {
         float failProb = 0f + msgFailSim.nextFloat();
 
         if(side.equals("client")){
+            System.out.println("Client fail prob: " + failProb);
             return failProb <= CLIENT_FAILURE_PROB;
         }else{
+            System.out.println("Server fail prob: " + failProb);
             return failProb <= SERVER_FAILURE_PROB;
         }
     }

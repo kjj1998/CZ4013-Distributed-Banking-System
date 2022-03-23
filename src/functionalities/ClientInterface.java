@@ -38,7 +38,7 @@ public class ClientInterface {
 
 
         byte[] reply = null; //send atLeastOnce
-//        if (atLeastOnce){
+        reply=sendRequest(marshall);
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
             System.out.println("Resending Message");
@@ -75,6 +75,7 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, accBalanceQueryByteArray, accNumberByteArray, passwordByteArray);
 
         byte[] reply = null;
+        reply=sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
@@ -114,6 +115,7 @@ public class ClientInterface {
 
         //byte[] reply = null;
         byte[] reply = null;
+        reply=sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             System.out.println("Resending Message");
@@ -157,6 +159,7 @@ public class ClientInterface {
         //byte[] reply = sendRequest(marshall);
         byte[] reply = null;
 
+        reply=sendRequest(marshall);
 //        System.out.println("Sent the request to deposit once. Trying again to see if At most once works");
 //        reply = sendRequest(marshall,atLeastOnce);
 
@@ -200,6 +203,7 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, withdrawMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,withdrawByteArray);
 
         byte[] reply = null;
+        reply=sendRequest(marshall);
         //byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
@@ -216,6 +220,8 @@ public class ClientInterface {
                 throw new IllegalArgumentException(NOT_FOUND);
             case UNAUTHORIZED:
                 throw new IllegalArgumentException(UNAUTHORIZED);
+            case INSUFFICIENT:
+                throw new IllegalArgumentException(INSUFFICIENT);
             default:
                 throw new Exception();}
     }
@@ -243,6 +249,7 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, transferMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,toAccNumberByteArray,currencyByteArray,transferByteArray);
 
         byte[] reply = null;
+        reply=sendRequest(marshall);
         //byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
@@ -281,6 +288,7 @@ public class ClientInterface {
 
         DatagramSocket aSocket = new DatagramSocket();
         byte[] reply = null;
+        reply=sendRequestForMonitoring(startMonitoringMarshall, aSocket);
         while(reply==null || failMessage("client")){
             reply=sendRequestForMonitoring(startMonitoringMarshall, aSocket);
             System.out.println("Resending Message");
