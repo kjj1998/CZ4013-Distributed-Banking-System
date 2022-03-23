@@ -50,11 +50,15 @@ public class SocketFunctions {
             return reply.getData();
         }
         catch(SocketTimeoutException e) {
+//            System.out.println("Socket timeout exception");
             return null;
         }
         catch (Exception e) {
+//            System.out.println("Reached here");
             System.out.println();
         }
+
+//        System.out.println("Outside try");
         return null;
     }
 

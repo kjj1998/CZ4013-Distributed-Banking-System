@@ -4,7 +4,6 @@
     <list default="true" id="927eeaad-5152-4f42-96ce-4bd9c7540854" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/functionalities/ClientInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/functionalities/ClientInterface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Constants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/SocketFunctions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/SocketFunctions.java" afterDir="false" />

@@ -37,7 +37,7 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, accCreationByteArray, nameByteArray, currencyByteArray, passwordByteArray, accBalanceArray);
 
 
-        byte[] reply = null; //send atLeastOnce
+        byte[] reply = sendRequest(marshall); //send atLeastOnce
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
@@ -74,7 +74,7 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, accBalanceQueryByteArray, accNumberByteArray, passwordByteArray);
 
-        byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
@@ -113,7 +113,7 @@ public class ClientInterface {
         byte[] marshall = concatWithCopy(messageIDArray, closeAccByteArray, accNumberByteArray, nameByteArray, passwordByteArray);
 
         //byte[] reply = null;
-        byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             System.out.println("Resending Message");
@@ -154,8 +154,8 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, depositMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,depositByteArray);
 
-        //byte[] reply = sendRequest(marshall);
-        byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
+//        byte[] reply = null;
 
 //        System.out.println("Sent the request to deposit once. Trying again to see if At most once works");
 //        reply = sendRequest(marshall,atLeastOnce);
@@ -199,8 +199,8 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, withdrawMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,currencyByteArray,withdrawByteArray);
 
-        byte[] reply = null;
-        //byte[] reply = sendRequest(marshall);
+//        byte[] reply = null;
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
             reply=sendRequest(marshall);
@@ -216,6 +216,8 @@ public class ClientInterface {
                 throw new IllegalArgumentException(NOT_FOUND);
             case UNAUTHORIZED:
                 throw new IllegalArgumentException(UNAUTHORIZED);
+            case INSUFFICIENT:
+                throw new IllegalArgumentException(INSUFFICIENT);
             default:
                 throw new Exception();}
     }
@@ -242,10 +244,12 @@ public class ClientInterface {
         byte[] messageIDArray = convertStringToByteArray(gen.nextString());
         byte[] marshall = concatWithCopy(messageIDArray, transferMoneyByteArray, nameByteArray, accNumberByteArray, passwordByteArray,toAccNumberByteArray,currencyByteArray,transferByteArray);
 
-        byte[] reply = null;
-        //byte[] reply = sendRequest(marshall);
+//        byte[] reply = null;
+//        reply = sendRequest(marshall);
+        byte[] reply = sendRequest(marshall);
 //        if (atLeastOnce){
         while(reply==null || failMessage("client")){
+            System.out.println("Here");
             reply=sendRequest(marshall);
             System.out.println("Resending Message");
         }
@@ -280,7 +284,7 @@ public class ClientInterface {
         byte[] endMonitoringMarshall = concatWithCopy(endMessageIDArray, endMonitorUpdatesByteArray);
 
         DatagramSocket aSocket = new DatagramSocket();
-        byte[] reply = null;
+        byte[] reply = sendRequestForMonitoring(startMonitoringMarshall, aSocket);
         while(reply==null || failMessage("client")){
             reply=sendRequestForMonitoring(startMonitoringMarshall, aSocket);
             System.out.println("Resending Message");
