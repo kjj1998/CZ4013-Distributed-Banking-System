@@ -13,11 +13,14 @@ import static utils.UtilityFunctions.round;
 
 public class ServerInterface {
     /**
-     * Function to process the account creation, which will unmarshall the data from the client
+     * Function to process the account creation
+     * Data (byte array form) from the client is first unmarshalled with help of a Pointer object
+     * The Pointer object is passed into every unmarshall operation, and it keeps tracks of where we should extract the data from the data given
+     * Generates a random account number, creates the account and adds it into the account mapping
      *
      * @param request byte array containing data from the client
      * @param accMapping the HashMap mapping account numbers to their respective accounts
-     * @return an Account object containing the account details (excluding password)
+     * @return the byte array containing the details of the newly created account
      */
     public static byte[] processAccCreation(byte[] request, Map<Integer, Account> accMapping) {
         /*
@@ -29,7 +32,7 @@ public class ServerInterface {
 
             00 00 00 01 00 00 00 0A 4A 6F 68 6E 20 53 6D 69 74 68 5F 5F 00 00 00 03 4E 5A 44 5F 00 00 00 08 50 40 73 73 77 6F 72 64 00 00 00 07 31 30 30 30 2E 30 30 5F
 
-            However, take note that the first 16 bytes will be the messageID which is randomly generated on the client side
+            However, take note that the first 16 bytes will be the messageID which is randomly generated on the client side (not shown in the above byte array)
 
             00 00 00 01 = 1 (4 bytes to decide what action server will take in the switch statement shown above)
 
@@ -53,12 +56,12 @@ public class ServerInterface {
         String password = unmarshall(pointer, request);
         String amtString = unmarshall(pointer, request);
         double amt = round(Double.parseDouble(amtString), 2);
-        int accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate random acc number
-        Account newAccount = new Account(name, Currency.valueOf(currency), password, amt, accNumber, AccountCreation);
 
+        int accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate random acc number
         if (accMapping.containsKey(accNumber)) {
             accNumber = (int) ((Math.random() * (Integer.MAX_VALUE - 1000000000)) + 1000000000);        // Generate another account number if not unique (not likely to happen in our use case)
         }
+        Account newAccount = new Account(name, Currency.valueOf(currency), password, amt, accNumber, AccountCreation);
         accMapping.put(accNumber, newAccount);     // create account and add it into the account mapping
 
         return marshallAccount(newAccount);
@@ -66,12 +69,16 @@ public class ServerInterface {
 
     /**
      * Function to query the server for the current account balance
+     * Data (byte array form) from the client is first unmarshalled with help of a Pointer object
+     * The Pointer object is passed into every unmarshall operation, and it keeps tracks of where we should extract the data given by the client
+     * Find the account to be queried
      *
      * @param request byte array containing the account number and password of the account
      * @param accMapping the HashMap mapping account numbers to their respective accounts
      * @return an Account object containing the account details (excluding password)
+     * @throws IllegalArgumentException throws exception if account is not found or password given is wrong
      */
-    public static byte[] processAccBalanceQuery(byte[] request, Map<Integer, Account> accMapping) {
+    public static byte[] processAccBalanceQuery(byte[] request, Map<Integer, Account> accMapping) throws IllegalArgumentException {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
@@ -92,13 +99,18 @@ public class ServerInterface {
 
     /**
      * Function to close an account on the server
+     * Data (byte array form) from the client is first unmarshalled with help of a Pointer object
+     * The Pointer object is passed into every unmarshall operation, and it keeps tracks of where we should extract the data given by the client
+     * Find the account to be queried
+     *
      * @param request byte array containing the account number, name and password of account to be closed
      * @param accMapping the HashMap mapping account numbers to their respective accounts
      * @param <K> Integer
      * @param <V> Account
      * @return an Account object containing the account details (excluding password)
+     * @throws IllegalArgumentException throws exception if account is not found or password given is wrong
      */
-    public static <K,V> byte[] processAccClosure(byte[] request, Map<K,V> accMapping) {
+    public static <K,V> byte[] processAccClosure(byte[] request, Map<K,V> accMapping) throws IllegalArgumentException {
         Pointer val = new Pointer(0);
 
         int accNumber = Integer.parseInt(unmarshall(val, request));
@@ -118,7 +130,19 @@ public class ServerInterface {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
-    public static byte[] depositMoney(byte[] request, Map<Integer, Account> accMapping){
+
+    /**
+     * Function to deposit money into an account on the server
+     * Data (byte array form) from the client is first unmarshalled with help of a Pointer object
+     * The Pointer object is passed into every unmarshall operation, and it keeps tracks of where we should extract the data given by the client
+     * Find the account to be queried and check that account name and password entered is correct
+     *
+     * @param request byte array containing the account number, name and password of account to be closed
+     * @param accMapping the HashMap mapping account numbers to their respective accounts
+     * @return an Account object containing the account details (excluding password)
+     * @throws IllegalArgumentException throws exception if account is not found or name/password given is wrong
+     */
+    public static byte[] depositMoney(byte[] request, Map<Integer, Account> accMapping) throws IllegalArgumentException{
         Pointer val = new Pointer(0);
 
         String name = unmarshall(val, request);
@@ -139,7 +163,20 @@ public class ServerInterface {
             throw new IllegalArgumentException(UNAUTHORIZED);
         }
     }
-    public static byte[] withdrawMoney(byte[] request, Map<Integer, Account> accMapping){
+
+    /**
+     * Function to withdraw money from an account on the server
+     * Data (byte array form) from the client is first unmarshalled with help of a Pointer object
+     * The Pointer object is passed into every unmarshall operation, and it keeps tracks of where we should extract the data given by the client
+     * Find the account to be queried and check that account name and password entered is correct
+     * Withdraw money if there is sufficient funds in account
+     *
+     * @param request byte array containing the account number, name and password of account to be closed
+     * @param accMapping the HashMap mapping account numbers to their respective accounts
+     * @return an Account object containing the account details (excluding password)
+     * @throws IllegalArgumentException throws exception if account is not found or name/password given is wrong or insufficient funds in account
+     */
+    public static byte[] withdrawMoney(byte[] request, Map<Integer, Account> accMapping) throws IllegalArgumentException{
         try {
             Pointer val = new Pointer(0);
 
@@ -165,6 +202,19 @@ public class ServerInterface {
         }
     }
 
+    /**
+     * Function to transfer money from an account on the server to another account on the server
+     * Data (byte array form) from the client is first unmarshalled with help of a Pointer object
+     * The Pointer object is passed into every unmarshall operation, and it keeps tracks of where we should extract the data given by the client
+     * Find the account to be queried and check that account name and password entered is correct
+     * Withdraw money if there is sufficient funds in account
+     * Check that the recipient account exists and then deposit funds into it
+     *
+     * @param request byte array containing the account number, name and password of account to be closed
+     * @param accMapping the HashMap mapping account numbers to their respective accounts
+     * @return an Account object containing the account details (excluding password)
+     * @throws IllegalArgumentException throws exception if account is not found or name/password given is wrong or insufficient funds in account
+     */
     public static byte[] transferMoney(byte[] request, Map<Integer, Account> accMapping){
         Pointer val = new Pointer(0);
 
@@ -198,11 +248,24 @@ public class ServerInterface {
         return marshallAccount(queriedAccount);
     }
 
+    /**
+     * Adds a client into the list of clients monitoring the server
+     * @param clientIdentifier  the string identifying a particular client
+     * @param o the Observer object which represents a client observing the server
+     * @param observerMap the HashMap that maps the clientIdentifier to an Observer object
+     * @return a byte array representing the OK status code
+     */
     public static byte[] addObserver(String clientIdentifier, Observer o, Map<String, Observer> observerMap) {
         observerMap.put(clientIdentifier, o);
         return marshall(OK);
     }
 
+    /**
+     * Removes a client from the list of clients monitoring the server
+     * @param clientIdentifier  the string identifying a particular client
+     * @param observerMap the HashMap that maps the clientIdentifier to an Observer object
+     * @return a byte array representing the OK status code
+     */
     public static byte[] removeObserver(String clientIdentifier, Map<String, Observer> observerMap) {
         observerMap.remove(clientIdentifier);
         return marshall(OK);

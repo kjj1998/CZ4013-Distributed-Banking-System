@@ -4,6 +4,9 @@ import java.net.InetAddress;
 
 import static utils.SocketFunctions.sendMonitorReply;
 
+/**
+ * The Observer object that represents a client monitoring the server
+ */
 public class Observer {
 
     private final InetAddress ip;
@@ -15,8 +18,6 @@ public class Observer {
     }
 
     public void notify(byte[] reply) {
-        System.out.println(ip);
-        System.out.println(port);
         sendMonitorReply(reply, ip, port);
     }
 }

@@ -14,10 +14,10 @@ import static utils.SocketFunctions.sendReply;
 import static utils.UtilityFunctions.byteArrayToInt;
 import static utils.UtilityFunctions.failMessage;
 
-public class Server <K, V> {
-    public static Map<Integer, Account> accMapping = new HashMap<>();       // maintain a mapping of account numbers to all accounts currently on the server
+public class Server {
+    public static Map<Integer, Account> accMapping = new HashMap<>();                                               // maintain a mapping of account numbers to all accounts currently on the server
     private static final LruReplyHistory<String, byte[]> replyHistory = new LruReplyHistory<>(LRU_CACHE_SIZE);      // maintain a history of replies base on the least recently used scheme
-    private static final Map<String, Observer> observerMap = new HashMap<String, Observer>();       // maintain a mapping of clients who are currently monitoring the server for updates
+    private static final Map<String, Observer> observerMap = new HashMap<>();                                       // maintain a mapping of clients who are currently monitoring the server for updates
 
     public static void main(String[] args) {
         System.out.println("Server started on port " + SERVER_PORT_NUMBER);
@@ -41,23 +41,20 @@ public class Server <K, V> {
                 messageID = new String(Arrays.copyOfRange(data, 0, MESSAGE_ID_LENGTH));             // retrieve the unique message id
                 System.out.printf("\nmessageID: %s\n", messageID);
 
-//                int action = byteArrayToInt(Arrays.copyOfRange(data, MESSAGE_ID_LENGTH, MESSAGE_INFO_START_INDEX));    // get the action to be taken by the server
-//                byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information from the client
-
-                //Check if message reply has already been stored
-                Optional<byte[]> cachedReply = replyHistory.getReply(messageID);
+                Optional<byte[]> cachedReply = replyHistory.getReply(messageID);    //Check if message reply has already been stored
 
                 int action;
+                // if message reply was cached, and we are using At-Most-Once semantics, tell server to send cached reply
                 if(cachedReply.isPresent() && !AT_LEAST_ONCE){
                     reply = cachedReply.get();
                     action = CACHED_REPLY;
                 }else {
                     action = byteArrayToInt(Arrays.copyOfRange(data, MESSAGE_ID_LENGTH, MESSAGE_INFO_START_INDEX));    // get the action to be taken by the server
                 }
-                byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information from the client
+                byte[] info = Arrays.copyOfRange(data, MESSAGE_INFO_START_INDEX, data.length);                         // get the information sent from the client
 
 
-                /* switch statement to select the action to be taken by the server */
+                // switch statement to select the action to be taken by the server
                 switch (action) {
                     case ACC_CREATION_CODE: {
                         System.out.println("Creating account...");
@@ -87,7 +84,6 @@ public class Server <K, V> {
                             replyHistory.putReply(messageID, reply);
 
                         System.out.println("Account closed");
-
                         break;
                     }
                     case DEPOSIT_MONEY_CODE:
@@ -150,21 +146,18 @@ public class Server <K, V> {
                     }
                 }
 
-                //if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
-
                 //Simulate server reply failure
                 //We assume all messages fail to send when simulating packet loss
                 if(!failMessage("server")) {
                     sendReply(request, reply, SERVER_FAILURE_PROB);      // send to client the reply message
                     if (action != ADD_OBSERVERS_FOR_MONITORING_CODE && action != REMOVE_OBSERVERS_FROM_MONITORING_CODE) {
-                        for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {  // notify any monitoring clients
-                            entry.getValue().notify(reply);
+                        for (Map.Entry<String, Observer> entry : observerMap.entrySet()) {
+                            entry.getValue().notify(reply);     // notify any monitoring clients
                         }
                     }
                 }else{
                     System.out.println("Message was not sent to simulate packet loss.");
                 }
-                //}
             } catch (IllegalArgumentException validationError) {
                 if (Objects.equals(validationError.getMessage(), NOT_FOUND)) {
                     assert request != null;
@@ -179,12 +172,12 @@ public class Server <K, V> {
                     sendReply(request, marshall(INSUFFICIENT), SERVER_FAILURE_PROB);
                     System.out.println("Error: Insufficient amount in account.");
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
             finally {
-                reply = new byte[BUFFER_SIZE];         // reset buffers
+                // reset buffers
+                reply = new byte[BUFFER_SIZE];
                 buffer = new byte[BUFFER_SIZE];
             }
         }

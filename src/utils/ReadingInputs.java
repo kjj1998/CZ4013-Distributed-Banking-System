@@ -103,6 +103,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in money for deposits
+     * @return the monetary to be deposited
+     */
     public static Double readDeposit() {
         while (true) {
             System.out.println("Enter the amount to deposit: ");
@@ -113,6 +117,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in money for withdrawal
+     * @return the monetary to be withdrawn
+     */
     public static Double readWithdraw() {
         while (true) {
             System.out.println("Enter the amount to withdraw: ");
@@ -123,6 +131,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in money for transfer
+     * @return the monetary to be withdrawn for transfer
+     */
     public static Double readTransfer() {
         while (true) {
             System.out.println("Enter the amount to transfer: ");
@@ -146,6 +158,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in the recipient account number
+     * @return the recipient account number string
+     */
     public static String readRecipientAccountNumber() {
         while (true) {
             System.out.println("Enter recipient account number: ");
@@ -156,6 +172,10 @@ public class ReadingInputs {
         }
     }
 
+    /**
+     * A function to read in duration for monitoring of server in seconds
+     * @return the recipient account number string
+     */
     public static int readMonitorDuration() {
         while (true) {
             try {
@@ -166,13 +186,5 @@ public class ReadingInputs {
                 System.out.println("Invalid input entered");
             }
         }
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        System.out.print("[#                    ] 1%\r");
-        Thread.sleep(1000);
-        System.out.print("[#########            ] 50%\r");
-        Thread.sleep(1000);
-        System.out.print("[#####################] 100%\n");
     }
 }

@@ -7,6 +7,7 @@ public class ErrorHandling {
 
     /**
      * A function to check that input for name is well-formed
+     *
      * @param name the text string to be checked
      * @return whether the name is formed correctly
      */
@@ -20,6 +21,7 @@ public class ErrorHandling {
 
     /**
      * A function to check that a new password is well-formed
+     *
      * @param password the text string to be checked
      * @return whether the password is formed correctly
      */
@@ -42,6 +44,7 @@ public class ErrorHandling {
 
     /**
      * A function to verified that monetary amounts are entered correctly in dollars and cents
+     *
      * @param amt the text string to be checked
      * @return whether the monetary amount is formed correctly
      */
@@ -54,6 +57,7 @@ public class ErrorHandling {
 
     /**
      * A function to verify that the account number entered is well-formed
+     *
      * @param accNumber the text string to be checked
      * @return whether the account number is formed correctly
      */

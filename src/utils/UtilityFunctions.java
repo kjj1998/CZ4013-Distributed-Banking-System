@@ -90,14 +90,20 @@ public class UtilityFunctions {
         return bd.doubleValue();
     }
 
+    /**
+     * Function to generate a failure probability to decide if the message sent will be lost
+     * For example, if the failure rate set in the system is 0.8, any value generated that is less than or equal to 0.8
+     * will cause the message sending to fail
+     *
+     * @param side this will tell us where the failure probability is being generated for i.e. client or server side
+     * @return true if message sending will fail, false if it will succeed
+     */
     public static boolean failMessage(String side){
         float failProb = 0f + msgFailSim.nextFloat();
 
         if(side.equals("client")){
-//            System.out.println("Client fail prob: " + failProb);
             return failProb <= CLIENT_FAILURE_PROB;
-        }else{
-//            System.out.println("Server fail prob: " + failProb);
+        } else {
             return failProb <= SERVER_FAILURE_PROB;
         }
     }

@@ -1,19 +1,19 @@
 package objects;
-import java.text.DecimalFormat;
 
 import java.util.Objects;
-import static utils.Constants.sgdExchangeRate;
-import static utils.Constants.nzdExchangeRate;
-import static utils.Constants.usdExchangeRate;
-import static utils.Constants.INSUFFICIENT;
 
+import static utils.Constants.*;
+
+/**
+ * Account object, representation of an Account on the server
+ */
 public class Account {
     private final String name;
     private final Currency cur;
     private String password;
     private double accBalance;
     private final int accNumber;
-    private String action;
+    private String action;  // most recent action done on this account e.g. account creation, deposit, withdrawal etc.
 
     public Account(String name, Currency cur, String password, double accBalance, int accNumber) {
         this.name = name;
@@ -60,6 +60,13 @@ public class Account {
         return cur;
     }
 
+    /**
+     * Convert the amt to be withdrawn into the currency of the account if needed
+     * To Deduct the amt from the current balance
+     * @param amt the amt to be withdrawn
+     * @param currency the currency of the amt to be withdrawn
+     * @exception IllegalArgumentException throw exception if there is insufficient amount in account
+     */
     public void withdraw(double amt,String currency) {
         double accCurrencyRate=getCurrencyRate(cur.toString());
         double depositCurrencyRate=getCurrencyRate(currency);
@@ -72,6 +79,13 @@ public class Account {
         this.accBalance -= amt;
     }
 
+    /**
+     * Convert the amt to be deposited into the currency of the account if needed
+     * Deposit the amt into the account
+     *
+     * @param amt the amt to be deposited
+     * @param currency the currency of the amt to be deposited
+     */
     public void deposit(double amt,String currency) {
         double accCurrencyRate=getCurrencyRate(cur.toString());
         double depositCurrencyRate=getCurrencyRate(currency);
@@ -101,5 +115,5 @@ public class Account {
             return usdExchangeRate;
         return 0.00;
     }
-    
+
 }

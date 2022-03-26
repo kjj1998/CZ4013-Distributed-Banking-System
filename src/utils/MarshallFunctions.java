@@ -15,6 +15,7 @@ import static utils.UtilityFunctions.*;
 public class MarshallFunctions {
     /**
      * Function to marshall a piece of String data
+     *
      * @param val the string to be marshalled
      * @return a byte array which is a concatenation of the length of the string and the characters in the string
      */
@@ -30,7 +31,7 @@ public class MarshallFunctions {
      *
      * @param point   Pointer class to keep track of pointer value so that the correct range can be selected from the request byte array
      * @param request byte array
-     * @return String value
+     * @return unmarshalled data in the form of a string
      */
     public static String unmarshall(Pointer point, byte[] request) {
         int start = point.val;
@@ -50,6 +51,7 @@ public class MarshallFunctions {
 
     /**
      * Function to unmarshall account details on the client side
+     *
      * @param pointer the Pointer object to keep track of the byte position
      * @param reply the byte[] array containing the marshalled account details from the server
      * @return Account object containing details from the server
@@ -65,6 +67,7 @@ public class MarshallFunctions {
 
     /**
      * Function to marshall account details on the server side
+     *
      * @param account the Account object containing the account details
      * @return byte[] array of the account details
      */
