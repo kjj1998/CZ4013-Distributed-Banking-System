@@ -252,7 +252,6 @@ public class ClientInterface {
 
         byte[] reply = sendRequest(marshall);
         while(reply==null || failMessage("client")){
-            System.out.println("Here");
             reply=sendRequest(marshall);
             System.out.println("Resending Message");
         }
