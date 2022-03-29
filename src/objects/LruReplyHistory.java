@@ -26,7 +26,6 @@ public class LruReplyHistory<K, V>{
              */
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-                System.out.println("Reached here");
                 return size() > LRU_CACHE_SIZE;
             }
         });
