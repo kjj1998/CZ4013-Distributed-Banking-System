@@ -5,8 +5,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static utils.Constants.LRU_CACHE_SIZE;
 
-public class LruReplyHistory<K, V> {
+
+public class LruReplyHistory<K, V>{
     private Map<K, V> responseHistory;
 
     /**
@@ -15,7 +17,23 @@ public class LruReplyHistory<K, V> {
      * @param cacheSize the size of the LRU cache or the maximum number of key value pairs that can be stored
      */
     public LruReplyHistory(int cacheSize) {
-        responseHistory = Collections.synchronizedMap(new LinkedHashMap<K, V>(cacheSize, 0.75f, true)); //access order pushes the most recent access to the front of the LRU cache.
+        responseHistory = Collections.synchronizedMap(new LinkedHashMap<K, V>(cacheSize, 0.75f, true){ //access order pushes the most recent access to the front of the LRU cache.
+
+            /**
+             * Removes the Least Recently Used entry in the response history when the LRU cache reaches its maximum capacity
+             * @param eldest the eldest entry in the LinkedHashMap
+             * @return boolean true if cache size has exceeded maximum capacity, false if cache size is currently lower than maximum capacity
+             */
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                System.out.println("Reached here");
+                return size() > LRU_CACHE_SIZE;
+            }
+        });
+    }
+
+    public Map<K, V> getResponseHistory() {
+        return responseHistory;
     }
 
     /**

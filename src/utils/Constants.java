@@ -5,9 +5,9 @@ public class Constants {
     public static final String HOST_NAME = "localhost"; // IP address to be changed based on which PC is acting as the server
     public static final int SERVER_PORT_NUMBER = 6789;
     public static final int BUFFER_SIZE = 1000;
-    public static final int LRU_CACHE_SIZE = 100;
+    public static final int LRU_CACHE_SIZE = 10;
 
-    public static final boolean AT_LEAST_ONCE = true; //if at least once is false, use at most once
+    public static final boolean AT_LEAST_ONCE = false; //if at least once is false, use at most once
     public static final int atLeastOnceTimeout = 2000;
     public static final float SERVER_FAILURE_PROB = 0;
     public static final float CLIENT_FAILURE_PROB = 0;
